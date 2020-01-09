@@ -35,11 +35,11 @@ public class DocletTip {
             
             for (int j = 0; j < nmethod; j++) {
                 MethodDoc m= methods[j];
-                if ( !m.name().endsWith("eventsConjunction") ) {
+                if ( !m.name().endsWith("complexMultiply") ) {
                     continue;
                 }
-                System.out.println("=="+m.name()+"==");
-                System.out.print( m.name() + "( " );
+                System.out.println("# "+m.name()+"\n");
+                System.out.print( m.returnType() + " " + m.name() + "( " );
                 for ( int k=0; k<m.parameters().length; k++ ) {
                     if ( k>0 ) System.out.print(", ");
                     Parameter pk= m.parameters()[k];
@@ -49,18 +49,24 @@ public class DocletTip {
                 System.out.println("");
                 System.out.println(m.commentText());
                 System.out.println("");
-                System.out.println("Parameters: " );
+                System.out.println("### Parameters:" );
                 for ( int k=0; k<m.paramTags().length; k++ ) {
                     ParamTag pt= m.paramTags()[k];
-                    System.out.println("* "+pt.parameterName() + " - " + pt.parameterComment() );
+                    if ( k>0 ) System.out.print("<br>");
+                    System.out.println(""+pt.parameterName() + " - " + pt.parameterComment() );
                 }
+                System.out.println("");
+                System.out.println("### Returns:" );
+                System.out.println(""+m.returnType().toString() + " ???<COMMENT>???" );
+                
+                System.out.println("");
                 Tag[] seeTags= m.tags("see");
                 if ( seeTags.length>0 ) {
-                    System.out.println("");
+                    System.out.println("### See Also:");
                 }
                 for ( int k=0; k<seeTags.length; k++ ) {
                     Tag t= seeTags[k];
-                    System.out.println("See  [" +t.text()+"]" );
+                    System.out.println("<a href='"+t.text()+"'>" +t.name() +"</a>" );
                 }
                 System.out.println("");
             }

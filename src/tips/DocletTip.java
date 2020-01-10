@@ -2,15 +2,16 @@
 package tips;
 
 import com.sun.javadoc.ClassDoc;
-import com.sun.javadoc.FieldDoc;
 import com.sun.javadoc.MethodDoc;
 import com.sun.javadoc.ParamTag;
 import com.sun.javadoc.Parameter;
 import com.sun.javadoc.RootDoc;
+import com.sun.javadoc.SeeTag;
 import com.sun.javadoc.Tag;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintStream;
+import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -58,18 +59,23 @@ public class DocletTip {
                 out = new PrintStream(f);
                 if ( !f.getParentFile().exists() ) {
                     if ( !f.getParentFile().mkdirs() ) throw new IllegalStateException("can't make dir");
-                }   MethodDoc methods[] = classes[i].methods();
+                }
+                
+                MethodDoc methods[] = classes[i].methods();
+                
+                Arrays.sort( methods, (MethodDoc o1, MethodDoc o2) -> o1.name().compareTo(o2.name()) );
+                
                 int nmethod= methods.length;
-                for (int j = 0; j < nmethod; j++) {
+                for (int j = 0; j < Math.min( 100, nmethod ); j++) {
                     MethodDoc m= methods[j];
                     out.println("# "+m.name()+"\n");
-                    out.print( m.returnType() + " " + m.name() + "( " );
+                    out.print( m.name() + "( " );
                     for ( int k=0; k<m.parameters().length; k++ ) {
                         if ( k>0 ) out.print(", ");
                         Parameter pk= m.parameters()[k];
                         out.print( pk.type() + " " + pk.name() );
                     }
-                    out.println(" )");
+                    out.println(" ) &rarr; " + m.returnType() );
                     out.println("");
                     out.println(m.commentText());
                     out.println("");
@@ -89,8 +95,19 @@ public class DocletTip {
                         out.println("### See Also:");
                     }
                     for ( int k=0; k<seeTags.length; k++ ) {
-                        Tag t= seeTags[k];
-                        out.println("<a href='"+t.text()+"'>" +t.name() +"</a>" );
+                        SeeTag t= (SeeTag)seeTags[k];
+                        int it= t.text().indexOf(')');
+                        String l;
+                        if ( it>-1 ) {
+                            l = t.text().substring(0,it+1);
+                        } else {
+                            l = t.text();
+                        }
+                        if ( t.label()==null ) {
+                            out.println("<a href='"+l+"'>" +l +"</a><br>" );
+                        } else {
+                            out.println("<a href='"+l+"'>" +l +"</a>"+t.label()+"<br>" );
+                        }
                     }
                     out.println("");
                 }

@@ -8,6 +8,11 @@ import com.sun.javadoc.ParamTag;
 import com.sun.javadoc.Parameter;
 import com.sun.javadoc.RootDoc;
 import com.sun.javadoc.Tag;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.PrintStream;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * From https://www.zdnet.com/article/customize-javadoc-output-with-doclets/
@@ -18,6 +23,8 @@ import com.sun.javadoc.Tag;
  */
 public class DocletTip {
 
+    private static final File apdoc= new File("/tmp/apdoc/");
+    
     /**
      * 
      * @param root
@@ -26,49 +33,71 @@ public class DocletTip {
      public static boolean start(RootDoc root) {
         ClassDoc[] classes = root.classes();
 
+        if ( !apdoc.exists() ) {
+            if ( !apdoc.mkdirs() ) throw new IllegalStateException("can't make dir "+apdoc);
+        }
+        
         for (int i = 0; i < classes.length; i++) {
-            System.out.println( "=== " + classes[i] + " === (" + i + ")");
             
-            MethodDoc methods[] = classes[i].methods();
-
-            int nmethod= methods.length;
-            
-            for (int j = 0; j < nmethod; j++) {
-                MethodDoc m= methods[j];
-                if ( !m.name().endsWith("complexMultiply") ) {
-                    continue;
+            PrintStream out= null;
+            try {
+                String s= classes[i].qualifiedName();
+                int is= 0;
+                for ( int j=0; j<s.length(); j++ ) {
+                    char c= s.charAt(j);
+                    if ( c>='A' && c<='Z' ) {
+                        is= j;
+                        break;
+                    }
                 }
-                System.out.println("# "+m.name()+"\n");
-                System.out.print( m.returnType() + " " + m.name() + "( " );
-                for ( int k=0; k<m.parameters().length; k++ ) {
-                    if ( k>0 ) System.out.print(", ");
-                    Parameter pk= m.parameters()[k];
-                    System.out.print( pk.type() + " " + pk.name() );
+                if ( is<s.length() ) {
+                    s= s.substring(0,is).replaceAll("\\.","/") + s.substring(is);
+                } else {
+                    throw new IllegalStateException("didn't find upper case letter");
+                }   File f= new File( apdoc.toString() + "/" + s + ".md" );
+                out = new PrintStream(f);
+                if ( !f.getParentFile().exists() ) {
+                    if ( !f.getParentFile().mkdirs() ) throw new IllegalStateException("can't make dir");
+                }   MethodDoc methods[] = classes[i].methods();
+                int nmethod= methods.length;
+                for (int j = 0; j < nmethod; j++) {
+                    MethodDoc m= methods[j];
+                    out.println("# "+m.name()+"\n");
+                    out.print( m.returnType() + " " + m.name() + "( " );
+                    for ( int k=0; k<m.parameters().length; k++ ) {
+                        if ( k>0 ) out.print(", ");
+                        Parameter pk= m.parameters()[k];
+                        out.print( pk.type() + " " + pk.name() );
+                    }
+                    out.println(" )");
+                    out.println("");
+                    out.println(m.commentText());
+                    out.println("");
+                    out.println("### Parameters:" );
+                    for ( int k=0; k<m.paramTags().length; k++ ) {
+                        ParamTag pt= m.paramTags()[k];
+                        if ( k>0 ) out.print("<br>");
+                        out.println(""+pt.parameterName() + " - " + pt.parameterComment() );
+                    }
+                    out.println("");
+                    out.println("### Returns:" );
+                    out.println(""+m.returnType().toString() + " ???<COMMENT>???" );
+                    
+                    out.println("");
+                    Tag[] seeTags= m.tags("see");
+                    if ( seeTags.length>0 ) {
+                        out.println("### See Also:");
+                    }
+                    for ( int k=0; k<seeTags.length; k++ ) {
+                        Tag t= seeTags[k];
+                        out.println("<a href='"+t.text()+"'>" +t.name() +"</a>" );
+                    }
+                    out.println("");
                 }
-                System.out.println(" )");
-                System.out.println("");
-                System.out.println(m.commentText());
-                System.out.println("");
-                System.out.println("### Parameters:" );
-                for ( int k=0; k<m.paramTags().length; k++ ) {
-                    ParamTag pt= m.paramTags()[k];
-                    if ( k>0 ) System.out.print("<br>");
-                    System.out.println(""+pt.parameterName() + " - " + pt.parameterComment() );
-                }
-                System.out.println("");
-                System.out.println("### Returns:" );
-                System.out.println(""+m.returnType().toString() + " ???<COMMENT>???" );
-                
-                System.out.println("");
-                Tag[] seeTags= m.tags("see");
-                if ( seeTags.length>0 ) {
-                    System.out.println("### See Also:");
-                }
-                for ( int k=0; k<seeTags.length; k++ ) {
-                    Tag t= seeTags[k];
-                    System.out.println("<a href='"+t.text()+"'>" +t.name() +"</a>" );
-                }
-                System.out.println("");
+            } catch (FileNotFoundException ex) {
+                Logger.getLogger(DocletTip.class.getName()).log(Level.SEVERE, null, ex);
+            } finally {
+                out.close();
             }
         }
 

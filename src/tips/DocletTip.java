@@ -68,6 +68,7 @@ public class DocletTip {
                 int nmethod= methods.length;
                 for (int j = 0; j < Math.min( 100, nmethod ); j++) {
                     MethodDoc m= methods[j];
+                    System.err.println( "Name: " + m.name() );
                     out.println("# "+m.name()+"\n");
                     out.print( m.name() + "( " );
                     for ( int k=0; k<m.parameters().length; k++ ) {
@@ -87,7 +88,17 @@ public class DocletTip {
                     }
                     out.println("");
                     out.println("### Returns:" );
-                    out.println(""+m.returnType().toString() + " ???<COMMENT>???" );
+                    Tag[] tags= m.tags("return");
+                    if ( tags.length>0 ) {
+                        String s1= tags[0].text();
+                        if ( s1.trim().length()>0 ) {
+                            out.println( s1 );
+                        } else {
+                            out.println( m.returnType().toString() );
+                        }
+                    } else {
+                        out.println( m.returnType().toString() );
+                    }
                     
                     out.println("");
                     Tag[] seeTags= m.tags("see");

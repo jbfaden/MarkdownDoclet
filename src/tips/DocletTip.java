@@ -26,6 +26,18 @@ public class DocletTip {
 
     private static final File apdoc= new File("/tmp/apdoc/");
     
+    
+    private static String fullTypeName( String type ) {
+        switch (type) {
+            case "QDataSet":
+                return "org.das2.qds.QDataSet";
+            case "Object":
+                return "java.lang.Object";
+            default:
+                return type;
+        }
+    }
+    
     /**
      * 
      * @param root
@@ -35,7 +47,7 @@ public class DocletTip {
         ClassDoc[] classes = root.classes();
 
         if ( !apdoc.exists() ) {
-            if ( !apdoc.mkdirs() ) throw new IllegalStateException("can't make dir "+apdoc);
+            if ( !apdoc.mkdirs() ) throw new IllegalStateException("can't make dir: "+apdoc);
         }
         
         for (int i = 0; i < classes.length; i++) {
@@ -43,6 +55,7 @@ public class DocletTip {
             PrintStream out= null;
             try {
                 String s= classes[i].qualifiedName();
+                System.err.println("# "+s);
                 int is= 0;
                 for ( int j=0; j<s.length(); j++ ) {
                     char c= s.charAt(j);
@@ -55,7 +68,12 @@ public class DocletTip {
                     s= s.substring(0,is).replaceAll("\\.","/") + s.substring(is);
                 } else {
                     throw new IllegalStateException("didn't find upper case letter");
-                }   File f= new File( apdoc.toString() + "/" + s + ".md" );
+                }   
+                File f= new File( apdoc.toString() + "/" + s + ".md" );
+                File d= f.getParentFile();
+                if ( !d.exists() ) {
+                    if ( !d.mkdirs() ) throw new IllegalStateException("can't make dir: "+d);
+                }
                 out = new PrintStream(f);
                 if ( !f.getParentFile().exists() ) {
                     if ( !f.getParentFile().mkdirs() ) throw new IllegalStateException("can't make dir");
@@ -66,17 +84,26 @@ public class DocletTip {
                 Arrays.sort( methods, (MethodDoc o1, MethodDoc o2) -> o1.name().compareTo(o2.name()) );
                 
                 int nmethod= methods.length;
-                for (int j = 0; j < Math.min( 100, nmethod ); j++) {
+                for (int j = 0; j < Math.min( 200, nmethod ); j++) {
                     MethodDoc m= methods[j];
-                    System.err.println( "Name: " + m.name() );
-                    out.println("# "+m.name()+"\n");
-                    out.print( m.name() + "( " );
+                    StringBuilder sb= new StringBuilder();
+                    StringBuilder ahrefBuilder= new StringBuilder();
+                    sb.append(m.name()).append("( ");
+                    ahrefBuilder.append(m.name()).append("(");
                     for ( int k=0; k<m.parameters().length; k++ ) {
-                        if ( k>0 ) out.print(", ");
+                        if ( k>0 ) sb.append(", ");
+                        if ( k>0 ) ahrefBuilder.append(",");
                         Parameter pk= m.parameters()[k];
-                        out.print( pk.type() + " " + pk.name() );
+                        sb.append(pk.type()).append(" ").append(pk.name());
+                        ahrefBuilder.append( fullTypeName(pk.typeName()) );
                     }
-                    out.println(" ) &rarr; " + m.returnType() );
+                    ahrefBuilder.append(")");
+                    // <a name='accum(org.das2.qds.QDataSet,org.das2.qds.QDataSet)'></a> // note not standard JavaDoc.
+                    sb.append(" ) &rarr; ").append(m.returnType());
+                    out.println("***");
+                    out.println("<a name=\""+ahrefBuilder.toString()+"\"></a>");
+                    out.println("# "+m.name());
+                    out.println(sb.toString());
                     out.println("");
                     out.println(m.commentText());
                     out.println("");
@@ -117,7 +144,7 @@ public class DocletTip {
                         if ( t.label()==null ) {
                             out.println("<a href='"+l+"'>" +l +"</a><br>" );
                         } else {
-                            out.println("<a href='"+l+"'>" +l +"</a>"+t.label()+"<br>" );
+                            out.println("<a href='"+l+"'>" +l +"</a> "+t.label()+"<br>" );
                         }
                     }
                     out.println("");

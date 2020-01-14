@@ -16,6 +16,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.Pattern;
 
 /**
  * From https://www.zdnet.com/article/customize-javadoc-output-with-doclets/
@@ -46,7 +47,28 @@ public class DocletTip {
         }
     }
     
-    private static Map<String,String> indicated= new HashMap<>();
+    private static String colloquialName( String name ) {
+        switch (name) {
+            case "org.das2.qds.QDataSet":
+                return "QDataSet";
+            case "java.lang.Object":
+                return "Object";
+            case "java.lang.Number":
+                return "Number";
+            default:
+                return name;
+        }
+    }
+    
+    private static String seeAlsoLabel( String n ) {
+        if ( n.startsWith("#") ) {
+            n= n.substring(1);
+        }
+        n= n.replaceAll("org.das2.qds.QDataSet", "QDataSet");
+        return n;
+    }
+    
+    private static final Map<String,String> indicated= new HashMap<>();
     
     /**
      * many routines have Objects as arguments which are converted
@@ -117,7 +139,7 @@ public class DocletTip {
                         if ( k>0 ) sb.append(", ");
                         if ( k>0 ) ahrefBuilder.append(",");
                         Parameter pk= m.parameters()[k];
-                        sb.append(pk.type()).append(" ").append(pk.name());
+                        sb.append(colloquialName(pk.type().toString())).append(" ").append(pk.name());
                         ahrefBuilder.append( fullTypeName(pk.typeName()) );
                     }
                     ahrefBuilder.append(")");
@@ -171,9 +193,9 @@ public class DocletTip {
                             l = t.text();
                         }
                         if ( t.label()==null ) {
-                            out.println("<a href='"+l+"'>" +l +"</a><br>" );
+                            out.println("<a href='"+l+"'>" + seeAlsoLabel(l) +"</a><br>" );
                         } else {
-                            out.println("<a href='"+l+"'>" +l +"</a> "+t.label()+"<br>" );
+                            out.println("<a href='"+l+"'>" + seeAlsoLabel(l) +"</a> "+t.label()+"<br>" );
                         }
                     }
                     out.println( String.format( "\n<a href=\"https://github.com/autoplot/dev/search?q=%s&unscoped_q=%s\">search for examples</a>", m.name(), m.name() ) );

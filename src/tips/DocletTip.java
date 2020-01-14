@@ -176,7 +176,8 @@ public class DocletTip {
                             out.println("<a href='"+l+"'>" +l +"</a> "+t.label()+"<br>" );
                         }
                     }
-                    out.println("");
+                    out.println( String.format( "\n<a href=\"https://github.com/autoplot/dev/search?q=%s&unscoped_q=%s\">search for examples</a>", m.name(), m.name() ) );
+                    
                 }
             } catch (FileNotFoundException ex) {
                 Logger.getLogger(DocletTip.class.getName()).log(Level.SEVERE, null, ex);

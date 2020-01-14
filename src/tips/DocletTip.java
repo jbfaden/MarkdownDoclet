@@ -12,6 +12,8 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintStream;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -27,6 +29,12 @@ public class DocletTip {
     private static final File apdoc= new File("/tmp/apdoc/");
     
     
+    /**
+     * convert colloquial "QDataSet" to "org.das2.qds.QDataSet" and
+     * similar.
+     * @param type
+     * @return 
+     */
     private static String fullTypeName( String type ) {
         switch (type) {
             case "QDataSet":
@@ -36,6 +44,21 @@ public class DocletTip {
             default:
                 return type;
         }
+    }
+    
+    private static Map<String,String> indicated= new HashMap<>();
+    
+    /**
+     * many routines have Objects as arguments which are converted
+     * to QDataSet using standard code.  This was probably a mistake, but
+     * we're stuck with it, and let's at least make the documentation efficient.
+     * @param signature signature like "diff(java.lang.Object)"
+     * @return null if not indicated, the text otherwise.
+     */
+    private static String haveIndicated( String signature ) {
+        String key= signature.replaceAll( "java\\.lang\\.Object","org.das2.qds.QDataSet" );
+        String haveIt= indicated.get(key);
+        return haveIt;        
     }
     
     /**
@@ -100,6 +123,12 @@ public class DocletTip {
                     ahrefBuilder.append(")");
                     // <a name='accum(org.das2.qds.QDataSet,org.das2.qds.QDataSet)'></a> // note not standard JavaDoc.
                     sb.append(" ) &rarr; ").append(m.returnType());
+                    if ( haveIndicated(ahrefBuilder.toString())!=null ) {
+                        out.println("<a name=\""+ahrefBuilder.toString()+"\"></a>");
+                        continue;
+                    } else {
+                        indicated.put( ahrefBuilder.toString(), ahrefBuilder.toString() );
+                    }
                     out.println("***");
                     out.println("<a name=\""+ahrefBuilder.toString()+"\"></a>");
                     out.println("# "+m.name());

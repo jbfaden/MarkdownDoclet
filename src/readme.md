@@ -12,3 +12,11 @@ spot7> javadoc -J-Xrunjdwp:server=y,transport=dt_socket,address=12345,suspend=y 
    -doclet tips.DocletTip \
    /home/jbf/temp/autoplot/QDataSet/src/org/das2/qds/ops/Ops.java
 ~~~~~
+
+To run the entire lot:
+~~~~~
+spot7> cd ~
+spot7> find temp/autoplot/ -name '*.java' | grep -v temp-src | grep -v temp-classes > sources.txt
+spot7> time javadoc -docletpath /home/jbf/ct/netbeansProjects/MarkdownDoclet/dist/MarkdownDoclet.jar\
+   -doclet tips.DocletTip -sourcepath temp/autoplot/ @sources.txt
+~~~~~

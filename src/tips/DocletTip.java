@@ -20,6 +20,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * From https://www.zdnet.com/article/customize-javadoc-output-with-doclets/
@@ -30,8 +32,7 @@ import java.util.logging.Logger;
  */
 public class DocletTip {
 
-    private static final File apdoc= new File("/home/jbf/tmp/autoplot/2020/20200115_apdoc/");
-    
+    private static final File apdoc= new File("/home/jbf/project/rbsp/git/autoplot/doc/");
     
     /**
      * convert colloquial "QDataSet" to "org.das2.qds.QDataSet" and
@@ -63,7 +64,7 @@ public class DocletTip {
             case "java.lang.Object":
                 return "Object";
             case "java.lang.String":
-                return "Number";
+                return "String";
             case "java.lang.Number":
                 return "Number";
             case "java.lang.Double":
@@ -79,6 +80,23 @@ public class DocletTip {
         }
         n= n.replaceAll("org.das2.qds.QDataSet", "QDataSet");
         return n;
+    }
+    
+    /**
+     * ensure no characters are found which would mess up markdown.
+     * @param s
+     * @return 
+     */
+    private static String markDownSafeSummary( String s ) {
+        Pattern p= Pattern.compile("[^0-9a-zA-Z,\\. _]");
+        Matcher m= p.matcher(s);
+        if ( m.find() ) {
+            s=  s.substring(0,m.start());
+            return s + "...";
+        } else {
+            return s;
+        }
+        
     }
     
     private static final Map<String,String> indicated= new HashMap<>();
@@ -110,13 +128,13 @@ public class DocletTip {
         
         Map<String,String> grandIndex= new HashMap<>();
         Map<String,String> grandIndexFirst= new HashMap<>();
+        Map<String,String> grandIndexClass= new HashMap<>();
         
         for (ClassDoc classe : classes) {
             
             PrintStream out= null;
             try {
                 String s = classe.qualifiedName();
-                System.err.println("# "+s);
                 int is= 0;
                 for ( int j=0; j<s.length(); j++ ) {
                     char c= s.charAt(j);
@@ -135,13 +153,14 @@ public class DocletTip {
                 MethodDoc[] methods = classe.methods();                
                 Arrays.sort( methods, (MethodDoc o1, MethodDoc o2) -> o1.name().compareTo(o2.name()) );
                 int nmethod= methods.length;
-                boolean byAlpha= false;
+                boolean byAlpha;
                 char currentLetter= 'a';
                 File f; // the current file to which we are writing
                 if ( nmethod>200 ) {
                     byAlpha= true;
                     f= new File( apdoc.toString() + "/" + s + "_" + currentLetter + ".md" );
                 } else {
+                    byAlpha= false;
                     f= new File( apdoc.toString() + "/" + s + ".md" );
                 }
                 File d= f.getParentFile();
@@ -248,9 +267,14 @@ public class DocletTip {
                     out.println( String.format( "\n<a href=\"https://github.com/autoplot/dev/search?q=%s&unscoped_q=%s\">search for examples</a>", name, name ) );
                     out.println("");
                     
-                    grandIndex.put( name, s + "_"+ currentLetter + ".md#"+name );
+                    if ( byAlpha ) {
+                        grandIndex.put( name, s + "_"+ currentLetter + ".md#"+name.toLowerCase() );
+                    } else {
+                        grandIndex.put( name, s + ".md#"+name.toLowerCase() );
+                    }
                     String firstSentence= m.commentText();
                     grandIndexFirst.put( name, firstSentence.substring(0,Math.min(60,firstSentence.length()) ) );
+                    grandIndexClass.put( name, classe.qualifiedName() );
                 }
             }catch (FileNotFoundException ex) {
                 Logger.getLogger(DocletTip.class.getName()).log(Level.SEVERE, null, ex);
@@ -266,8 +290,8 @@ public class DocletTip {
             for ( String k: keys ) {
                 indexOut.print("<a href=\""+grandIndex.get(k)+"\">");
                 indexOut.print(k);
-                indexOut.print("</a>");
-                indexOut.print(grandIndexFirst.get(k));
+                indexOut.print("</a> of "+ grandIndexClass.get(k) + " - " );
+                indexOut.print(markDownSafeSummary(grandIndexFirst.get(k)));
                 indexOut.println("<br>");
             }
         } catch ( IOException out ) {

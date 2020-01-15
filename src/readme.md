@@ -17,6 +17,10 @@ To run the entire lot:
 ~~~~~
 spot7> cd ~
 spot7> find temp/autoplot/ -name '*.java' | grep -v temp-src | grep -v temp-classes > sources.txt
-spot7> time javadoc -docletpath /home/jbf/ct/netbeansProjects/MarkdownDoclet/dist/MarkdownDoclet.jar\
+spot7> javadoc -docletpath /home/jbf/ct/netbeansProjects/MarkdownDoclet/dist/MarkdownDoclet.jar\
    -doclet tips.DocletTip -sourcepath temp/autoplot/ @sources.txt
 ~~~~~
+nudnik> cd /home/jbf/git/MarkdownDoclet
+nudnik> find /home/jbf/project/autoplot/autoplot-code/ -name '*.java' | grep -v temp-src \
+        | grep -v temp-classes | grep -v "/test/" | grep -v  "ProGAL" | grep -v "NetCdfDataSource" | grep -v VATesting > sources.txt
+nudnuk> javadoc -docletpath dist/MarkdownDoclet.jar -doclet tips.DocletTip -sourcepath @sources.txt

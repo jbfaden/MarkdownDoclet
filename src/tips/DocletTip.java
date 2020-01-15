@@ -45,6 +45,12 @@ public class DocletTip {
                 return "org.das2.qds.QDataSet";
             case "Object":
                 return "java.lang.Object";
+            case "String":
+                return "java.lang.String";
+            case "Number":
+                return "java.lang.Number";
+            case "Double":
+                return "java.lang.Double";
             default:
                 return type;
         }
@@ -56,8 +62,12 @@ public class DocletTip {
                 return "QDataSet";
             case "java.lang.Object":
                 return "Object";
+            case "java.lang.String":
+                return "Number";
             case "java.lang.Number":
                 return "Number";
+            case "java.lang.Double":
+                return "Double";
             default:
                 return name;
         }
@@ -115,8 +125,10 @@ public class DocletTip {
                         break;
                     }
                 }
+                String classNameNoPackage;
                 if ( is<s.length() ) {
                     s= s.substring(0,is).replaceAll("\\.","/") + s.substring(is);
+                    classNameNoPackage= s.substring(is);
                 } else {
                     throw new IllegalStateException("didn't find upper case letter");
                 }
@@ -167,7 +179,7 @@ public class DocletTip {
                     }
                     ahrefBuilder.append(")");
                     // <a name='accum(org.das2.qds.QDataSet,org.das2.qds.QDataSet)'></a> // note not standard JavaDoc.
-                    sb.append(" ) &rarr; ").append(m.returnType());
+                    sb.append(" ) &rarr; ").append( colloquialName(m.returnType().simpleTypeName() ) );
                     if ( haveIndicated(ahrefBuilder.toString())!=null ) {
                         out.println("<a name=\""+ahrefBuilder.toString()+"\"></a>");
                         continue;
@@ -193,15 +205,16 @@ public class DocletTip {
                     if ( tags.length>0 ) {
                         String s1= tags[0].text();
                         if ( s1.trim().length()>0 ) {
-                            out.println( s1 );
+                            out.println( s1.trim() );
                         } else {
                             out.println( m.returnType().toString() );
+                            out.println("");
                         }
                     } else {
                         out.println( m.returnType().toString() );
+                        out.println("");
                     }
                     
-                    out.println("");
                     Tag[] seeTags= m.tags("see");
                     if ( seeTags.length>0 ) {
                         out.println("### See Also:");
@@ -215,13 +228,26 @@ public class DocletTip {
                         } else {
                             l = t.text();
                         }
+                        
+                        if ( byAlpha && l.charAt(1)!=currentLetter ) {
+                            l= classNameNoPackage + "_" + l.charAt(1) + ".md" + l;
+                        }
+                        
+                        String link= l;
+                        int ii= link.indexOf("(");
+                        if ( ii>-1 ) {
+                            link= link.substring(0,ii);
+                        }
+                        
                         if ( t.label()==null ) {
-                            out.println("<a href='"+l+"'>" + seeAlsoLabel(l) +"</a><br>" );
+                            out.println("<a href='"+link+"'>" + seeAlsoLabel(l) +"</a><br>" );
                         } else {
-                            out.println("<a href='"+l+"'>" + seeAlsoLabel(l) +"</a> "+t.label()+"<br>" );
+                            out.println("<a href='"+link+"'>" + seeAlsoLabel(l) +"</a> "+t.label()+"<br>" );
                         }
                     }
                     out.println( String.format( "\n<a href=\"https://github.com/autoplot/dev/search?q=%s&unscoped_q=%s\">search for examples</a>", name, name ) );
+                    out.println("");
+                    
                     grandIndex.put( name, s + "_"+ currentLetter + ".md#"+name );
                     String firstSentence= m.commentText();
                     grandIndexFirst.put( name, firstSentence.substring(0,Math.min(60,firstSentence.length()) ) );

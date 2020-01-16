@@ -45,6 +45,8 @@ public class DocletTip {
         switch (type) {
             case "QDataSet":
                 return "org.das2.qds.QDataSet";
+            case "ProgressMonitor":
+                return "org.das2.util.monitor.ProgressMonitor";
             case "Object":
                 return "java.lang.Object";
             case "String":
@@ -62,6 +64,8 @@ public class DocletTip {
         switch (name) {
             case "org.das2.qds.QDataSet":
                 return "QDataSet";
+            case "org.das2.util.monitor.ProgressMonitor":
+                return "ProgressMonitor";
             case "java.lang.Object":
                 return "Object";
             case "java.lang.String":

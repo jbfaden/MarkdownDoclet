@@ -47,6 +47,10 @@ public class DocletTip {
                 return "org.das2.qds.QDataSet";
             case "ProgressMonitor":
                 return "org.das2.util.monitor.ProgressMonitor";
+            case "Datum":
+                return "org.das2.datum.Datum";
+            case "DatumRange":
+                return "org.das2.datum.DatumRange";
             case "Object":
                 return "java.lang.Object";
             case "String":
@@ -66,6 +70,10 @@ public class DocletTip {
                 return "QDataSet";
             case "org.das2.util.monitor.ProgressMonitor":
                 return "ProgressMonitor";
+            case "org.das2.datum.Datum":
+                return "Datum";
+            case "org.das2.datum.DatumRange":
+                return "DatumRange";
             case "java.lang.Object":
                 return "Object";
             case "java.lang.String":

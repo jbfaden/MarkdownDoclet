@@ -32,7 +32,8 @@ import java.util.regex.Pattern;
  */
 public class DocletTip {
 
-    private static final File apdoc= new File("/home/jbf/project/rbsp/git/autoplot/doc/");
+    private static final File mddoc= new File("/home/jbf/project/rbsp/git/autoplot/doc/");
+    private static final File htmldoc= new File("/home/jbf/Linux/public_html/autoplot/doc/");
     
     /**
      * convert colloquial "QDataSet" to "org.das2.qds.QDataSet" and
@@ -122,8 +123,12 @@ public class DocletTip {
      public static boolean start(RootDoc root) {
         ClassDoc[] classes = root.classes();
 
-        if ( !apdoc.exists() ) {
-            if ( !apdoc.mkdirs() ) throw new IllegalStateException("can't make dir: "+apdoc);
+        if ( !mddoc.exists() ) {
+            if ( !mddoc.mkdirs() ) throw new IllegalStateException("can't make dir: "+mddoc);
+        }
+
+        if ( !htmldoc.exists() ) {
+            if ( !htmldoc.mkdirs() ) throw new IllegalStateException("can't make dir: "+htmldoc);
         }
         
         Map<String,String> grandIndex= new HashMap<>();
@@ -132,7 +137,8 @@ public class DocletTip {
         
         for (ClassDoc classe : classes) {
             
-            PrintStream out= null;
+            PrintStream mdout= null;
+            PrintStream htmlout= null;
             try {
                 String s = classe.qualifiedName();
                 int is= 0;
@@ -155,21 +161,32 @@ public class DocletTip {
                 int nmethod= methods.length;
                 boolean byAlpha;
                 char currentLetter= 'a';
-                File f; // the current file to which we are writing
+                File mdf; // the current file to which we are writing
+                File htmlf;
                 if ( nmethod>200 ) {
                     byAlpha= true;
-                    f= new File( apdoc.toString() + "/" + s + "_" + currentLetter + ".md" );
+                    mdf= new File( mddoc.toString() + "/" + s + "_" + currentLetter + ".md" );
+                    htmlf= new File( htmldoc.toString() + "/" + s + "_" + currentLetter + ".html" );
                 } else {
                     byAlpha= false;
-                    f= new File( apdoc.toString() + "/" + s + ".md" );
+                    mdf= new File( mddoc.toString() + "/" + s + ".md" );
+                    htmlf= new File( htmldoc.toString() + "/" + s + ".html" );
                 }
-                File d= f.getParentFile();
+
+                File d= mdf.getParentFile();
                 if ( !d.exists() ) {
                     if ( !d.mkdirs() ) throw new IllegalStateException("can't make dir: "+d);
                 }
-                out = new PrintStream(f);
-                if ( !f.getParentFile().exists() ) {
-                    if ( !f.getParentFile().mkdirs() ) throw new IllegalStateException("can't make dir");
+                d= htmlf.getParentFile();
+                if ( !d.exists() ) {
+                    if ( !d.mkdirs() ) throw new IllegalStateException("can't make dir: "+d);
+                }
+
+                mdout = new PrintStream(mdf);
+                htmlout= new PrintStream(htmlf);
+                
+                if ( !mdf.getParentFile().exists() ) {
+                    if ( !mdf.getParentFile().mkdirs() ) throw new IllegalStateException("can't make dir");
                 }
                 for (int j = 0; j < Math.min( 20000, nmethod ); j++) {
                     MethodDoc m= methods[j];
@@ -178,10 +195,13 @@ public class DocletTip {
                     
                     if ( byAlpha ) {
                         if ( name.charAt(0)!=currentLetter ) {
-                            out.close();
+                            mdout.close();
+                            htmlout.close();
                             currentLetter= name.charAt(0);
-                            f= new File( apdoc.toString() + "/" + s + "_"+ currentLetter + ".md" );
-                            out = new PrintStream(f);
+                            mdf= new File( mddoc.toString() + "/" + s + "_"+ currentLetter + ".md" );
+                            htmlf= new File( htmldoc.toString() + "/" + s + "_"+ currentLetter + ".html" );
+                            mdout = new PrintStream(mdf);
+                            htmlout = new PrintStream(htmlf);
                         }
                     }
                     
@@ -200,43 +220,67 @@ public class DocletTip {
                     // <a name='accum(org.das2.qds.QDataSet,org.das2.qds.QDataSet)'></a> // note not standard JavaDoc.
                     sb.append(" ) &rarr; ").append( colloquialName(m.returnType().simpleTypeName() ) );
                     if ( haveIndicated(ahrefBuilder.toString())!=null ) {
-                        out.println("<a name=\""+ahrefBuilder.toString()+"\"></a>");
+                        mdout.println("<a name=\""+ahrefBuilder.toString()+"\"></a>");
+                        htmlout.println("<a name=\""+ahrefBuilder.toString().replaceAll("\\.md",".html")+"\"></a>");
                         continue;
                     } else {
                         indicated.put( ahrefBuilder.toString(), ahrefBuilder.toString() );
                     }
-                    out.println("***");
-                    out.println("<a name=\""+ahrefBuilder.toString()+"\"></a>");
-                    out.println("# "+name);
-                    out.println(sb.toString());
-                    out.println("");
-                    out.println(m.commentText());
-                    out.println("");
-                    out.println("### Parameters:" );
+                    mdout.println("***");
+                    htmlout.println("<hr>");
+                    mdout.println("<a name=\""+ahrefBuilder.toString()+"\"></a>");
+                    htmlout.println("<a name=\""+ahrefBuilder.toString()+"\"></a>");
+                    mdout.println("# "+name);
+                    htmlout.println("<h1>"+name+"</h1>");
+                    
+                    mdout.println(sb.toString());
+                    htmlout.println(sb.toString());
+                    
+                    mdout.println("");
+                    htmlout.println("");
+                    mdout.println(m.commentText());
+                    htmlout.println("<p>"+m.commentText()+"</p>");
+                    
+                    mdout.println("");
+                    htmlout.println("");
+                    mdout.println("### Parameters:" );
+                    htmlout.println("<h3>Parameters</h3>" );
                     for ( int k=0; k<m.paramTags().length; k++ ) {
                         ParamTag pt= m.paramTags()[k];
-                        if ( k>0 ) out.print("<br>");
-                        out.println(""+pt.parameterName() + " - " + pt.parameterComment() );
+                        if ( k>0 ) {
+                            mdout.print("<br>");
+                            htmlout.println("<br>");
+                        }
+                        mdout.println(""+pt.parameterName() + " - " + pt.parameterComment() );
+                        htmlout.println(""+pt.parameterName() + " - " + pt.parameterComment() );
                     }
-                    out.println("");
-                    out.println("### Returns:" );
+                    mdout.println("");
+                    htmlout.println("");
+                    mdout.println("### Returns:" );
+                    htmlout.println("<h3>Returns:</h3>" );
                     Tag[] tags= m.tags("return");
                     if ( tags.length>0 ) {
                         String s1= tags[0].text();
                         if ( s1.trim().length()>0 ) {
-                            out.println( s1.trim() );
+                            mdout.println( s1.trim() );
+                            htmlout.println( s1.trim() );
                         } else {
-                            out.println( m.returnType().toString() );
-                            out.println("");
+                            mdout.println( m.returnType().toString() );
+                            htmlout.println( m.returnType().toString() );
+                            mdout.println("");
+                            htmlout.println( "" );
                         }
                     } else {
-                        out.println( m.returnType().toString() );
-                        out.println("");
+                        mdout.println( m.returnType().toString() );
+                        htmlout.println( m.returnType().toString() );
+                        mdout.println("");
+                        htmlout.println("");
                     }
                     
                     Tag[] seeTags= m.tags("see");
                     if ( seeTags.length>0 ) {
-                        out.println("### See Also:");
+                        mdout.println("### See Also:");
+                        htmlout.println("<h3>See Also:</h3>");
                     }
                     for (Tag seeTag : seeTags) {
                         SeeTag t = (SeeTag) seeTag;
@@ -259,13 +303,18 @@ public class DocletTip {
                         }
                         
                         if ( t.label()==null ) {
-                            out.println("<a href='"+link+"'>" + seeAlsoLabel(l) +"</a><br>" );
+                            mdout.println("<a href='"+link+"'>" + seeAlsoLabel(l) +"</a><br>" );
+                            htmlout.println( "<a href='"+link.replaceAll("\\.md",".html")+"'>" + seeAlsoLabel(l) +"</a><br>" );
                         } else {
-                            out.println("<a href='"+link+"'>" + seeAlsoLabel(l) +"</a> "+t.label()+"<br>" );
+                            mdout.println("<a href='"+link+"'>" + seeAlsoLabel(l) +"</a> "+t.label()+"<br>" );
+                            htmlout.println("<a href='"+link.replaceAll("\\.md",".html")+"'>" + seeAlsoLabel(l) +"</a> "+t.label()+"<br>" );
                         }
                     }
-                    out.println( String.format( "\n<a href=\"https://github.com/autoplot/dev/search?q=%s&unscoped_q=%s\">search for examples</a>", name, name ) );
-                    out.println("");
+                    mdout.println( String.format( "\n<a href=\"https://github.com/autoplot/dev/search?q=%s&unscoped_q=%s\">search for examples</a>", name, name ) );
+                    htmlout.println( String.format( "<br>\n<a href=\"https://github.com/autoplot/dev/search?q=%s&unscoped_q=%s\">search for examples</a>", name, name ) );
+                    
+                    mdout.println("");
+                    htmlout.println("<br>");
                     
                     if ( byAlpha ) {
                         grandIndex.put( name, s + "_"+ currentLetter + ".md#"+name.toLowerCase() );
@@ -279,11 +328,11 @@ public class DocletTip {
             }catch (FileNotFoundException ex) {
                 Logger.getLogger(DocletTip.class.getName()).log(Level.SEVERE, null, ex);
             } finally {
-                out.close();
+                mdout.close();
             }
         }
         
-        File grandIndexFile= new File( apdoc.toString() + "/index-all.md" );
+        File grandIndexFile= new File( mddoc.toString() + "/index-all.md" );
         try ( PrintStream indexOut=new PrintStream(grandIndexFile) ) {
             List<String> keys= new ArrayList( grandIndex.keySet() );
             Collections.sort(keys);
@@ -298,6 +347,21 @@ public class DocletTip {
             throw new IllegalStateException("could not write to "+grandIndexFile);
         }
 
+        grandIndexFile= new File( htmldoc.toString() + "/index-all.html" );
+        try ( PrintStream indexOut=new PrintStream(grandIndexFile) ) {
+            List<String> keys= new ArrayList( grandIndex.keySet() );
+            Collections.sort(keys);
+            for ( String k: keys ) {
+                indexOut.print("<a href=\""+grandIndex.get(k).replaceAll("\\.md",".html")+"\">");
+                indexOut.print(k);
+                indexOut.print("</a> of "+ grandIndexClass.get(k) + " - " );
+                indexOut.print(markDownSafeSummary(grandIndexFirst.get(k)));
+                indexOut.println("<br>");
+            }
+        } catch ( IOException out ) {
+            throw new IllegalStateException("could not write to "+grandIndexFile);
+        }
+        
         return true;
     }
 } 

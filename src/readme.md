@@ -12,6 +12,9 @@ spot7> javadoc -J-Xrunjdwp:server=y,transport=dt_socket,address=12345,suspend=y 
    -doclet tips.DocletTip \
    /home/jbf/temp/autoplot/QDataSet/src/org/das2/qds/ops/Ops.java
 ~~~~~
+nudnuk> javadoc -J-Xrunjdwp:server=y,transport=dt_socket,address=12345,suspend=y \
+   -docletpath dist/MarkdownDoclet.jar -doclet tips.DocletTip -sourcepath @sources.txt
+~~~~~
 
 To run the entire lot:
 ~~~~~

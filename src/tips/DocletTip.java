@@ -47,6 +47,8 @@ public class DocletTip {
                 return "org.das2.qds.QDataSet";
             case "ProgressMonitor":
                 return "org.das2.util.monitor.ProgressMonitor";
+            case "Units":
+                return "org.das2.datum.Units";
             case "Datum":
                 return "org.das2.datum.Datum";
             case "DatumRange":
@@ -70,6 +72,8 @@ public class DocletTip {
                 return "QDataSet";
             case "org.das2.util.monitor.ProgressMonitor":
                 return "ProgressMonitor";
+            case "org.das2.datum.Units":
+                return "Units";
             case "org.das2.datum.Datum":
                 return "Datum";
             case "org.das2.datum.DatumRange":
@@ -175,16 +179,20 @@ public class DocletTip {
                 char currentLetter= 'a';
                 File mdf; // the current file to which we are writing
                 File htmlf;
+                String loc;
                 if ( nmethod>200 ) {
                     byAlpha= true;
+                    loc=  s + "_" + currentLetter + ".md";
                     mdf= new File( mddoc.toString() + "/" + s + "_" + currentLetter + ".md" );
                     htmlf= new File( htmldoc.toString() + "/" + s + "_" + currentLetter + ".html" );
                 } else {
                     byAlpha= false;
+                    loc=  s + ".md";
                     mdf= new File( mddoc.toString() + "/" + s + ".md" );
                     htmlf= new File( htmldoc.toString() + "/" + s + ".html" );
                 }
-
+                
+                
                 File d= mdf.getParentFile();
                 if ( !d.exists() ) {
                     if ( !d.mkdirs() ) throw new IllegalStateException("can't make dir: "+d);
@@ -212,6 +220,7 @@ public class DocletTip {
                             currentLetter= name.charAt(0);
                             mdf= new File( mddoc.toString() + "/" + s + "_"+ currentLetter + ".md" );
                             htmlf= new File( htmldoc.toString() + "/" + s + "_"+ currentLetter + ".html" );
+                            loc=  s + "_" + currentLetter + ".md";
                             mdout = new PrintStream(mdf);
                             htmlout = new PrintStream(htmlf);
                         }
@@ -323,9 +332,10 @@ public class DocletTip {
                         }
                     }
                     mdout.println( String.format( "\n<a href=\"https://github.com/autoplot/dev/search?q=%s&unscoped_q=%s\">search for examples</a>", name, name ) );
-                    htmlout.println( String.format( "<br>\n<a href=\"https://github.com/autoplot/dev/search?q=%s&unscoped_q=%s\">search for examples</a>", name, name ) );
-                    
+                    htmlout.println( String.format( "<br><br>\n<a href=\"https://github.com/autoplot/dev/search?q=%s&unscoped_q=%s\">search for examples</a>", name, name ) );
+                    htmlout.println( String.format( " <a href=\"https://github.com/autoplot/documentation/wiki/doc/%s\">view on GitHub</a>", loc ) );
                     mdout.println("");
+                    htmlout.println("<br>");
                     htmlout.println("<br>");
                     
                     if ( byAlpha ) {

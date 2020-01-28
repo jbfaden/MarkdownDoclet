@@ -151,10 +151,9 @@ public class DocletTip {
         Map<String,String> grandIndex= new HashMap<>();
         Map<String,String> grandIndexFirst= new HashMap<>();
         Map<String,String> grandIndexClass= new HashMap<>();
+        Map<String,String> grandIndexSignature= new HashMap<>();
         
         boolean seePlotElement= false;
-        
-        System.err.println("start157");
         
         for (ClassDoc classe : classes) {
             
@@ -167,7 +166,7 @@ public class DocletTip {
             }
             
             PrintStream mdout= null;
-            PrintStream htmlout= null;
+            PrintStream htmlout;
             try {
                 String s = classe.qualifiedName();
                 if ( s.endsWith("PlotElement") ) {
@@ -313,18 +312,23 @@ public class DocletTip {
                         }
                     }
                     
+                    StringBuilder signature= new StringBuilder();
                     StringBuilder sb= new StringBuilder();
                     StringBuilder ahrefBuilder= new StringBuilder();
                     sb.append(name).append("( ");
                     ahrefBuilder.append(name).append("(");
+                    signature.append(name).append("(");
                     for ( int k=0; k<m.parameters().length; k++ ) {
                         if ( k>0 ) sb.append(", ");
                         if ( k>0 ) ahrefBuilder.append(",");
+                        if ( k>0 ) signature.append(",");
                         Parameter pk= m.parameters()[k];
                         sb.append(colloquialName(pk.type().toString())).append(" ").append(pk.name());
                         ahrefBuilder.append( fullTypeName(pk.typeName()) );
+                        signature.append(pk.name());
                     }
                     ahrefBuilder.append(")");
+                    signature.append(")");
                     // <a name='accum(org.das2.qds.QDataSet,org.das2.qds.QDataSet)'></a> // note not standard JavaDoc.
                     sb.append(" ) &rarr; ").append( colloquialName(m.returnType().simpleTypeName() ) );
                     if ( haveIndicated(ahrefBuilder.toString())!=null ) {
@@ -433,6 +437,7 @@ public class DocletTip {
                     String firstSentence= m.commentText();
                     grandIndexFirst.put( name, firstSentence.substring(0,Math.min(60,firstSentence.length()) ) );
                     grandIndexClass.put( name, classe.qualifiedName() );
+                    grandIndexSignature.put( name, signature.toString() );
                 }
             }catch (FileNotFoundException ex) {
                 Logger.getLogger(DocletTip.class.getName()).log(Level.SEVERE, null, ex);
@@ -447,7 +452,11 @@ public class DocletTip {
             Collections.sort(keys);
             for ( String k: keys ) {
                 indexOut.print("<a href=\""+grandIndex.get(k)+"\">");
-                indexOut.print(k);
+                if ( grandIndexSignature.containsKey(k) ) {
+                    indexOut.print(grandIndexSignature.get(k));
+                } else {
+                    indexOut.print(k);
+                }
                 String s= markDownSafeSummary(grandIndexFirst.get(k));
                 if ( s.length()>0 ) {
                     indexOut.print("</a> of "+ grandIndexClass.get(k) + " - " );

@@ -2,6 +2,7 @@
 package tips;
 
 import com.sun.javadoc.ClassDoc;
+import com.sun.javadoc.FieldDoc;
 import com.sun.javadoc.MethodDoc;
 import com.sun.javadoc.ParamTag;
 import com.sun.javadoc.Parameter;
@@ -151,12 +152,18 @@ public class DocletTip {
         Map<String,String> grandIndexFirst= new HashMap<>();
         Map<String,String> grandIndexClass= new HashMap<>();
         
+        boolean seePlotElement= false;
+        
         for (ClassDoc classe : classes) {
             
             PrintStream mdout= null;
             PrintStream htmlout= null;
             try {
                 String s = classe.qualifiedName();
+                if ( s.endsWith("PlotElement") ) {
+                    seePlotElement= true;
+                }
+                    
                 int is= 0;
                 for ( int j=0; j<s.length(); j++ ) {
                     char c= s.charAt(j);
@@ -172,7 +179,9 @@ public class DocletTip {
                 } else {
                     throw new IllegalStateException("didn't find upper case letter");
                 }
-                MethodDoc[] methods = classe.methods();                
+                MethodDoc[] methods = classe.methods();   
+                FieldDoc[] fields= classe.fields();
+                
                 Arrays.sort( methods, (MethodDoc o1, MethodDoc o2) -> o1.name().compareTo(o2.name()) );
                 int nmethod= methods.length;
                 boolean byAlpha;
@@ -192,6 +201,7 @@ public class DocletTip {
                     htmlf= new File( htmldoc.toString() + "/" + s + ".html" );
                 }
                 
+                int nfields= fields.length;
                 
                 File d= mdf.getParentFile();
                 if ( !d.exists() ) {
@@ -208,8 +218,75 @@ public class DocletTip {
                 if ( !mdf.getParentFile().exists() ) {
                     if ( !mdf.getParentFile().mkdirs() ) throw new IllegalStateException("can't make dir");
                 }
+                
+                for (int j = 0; j < Math.min( 20000, nfields ); j++) {
+                    FieldDoc f= fields[j];
+                    
+                    if ( !f.isPublic() ) continue;
+                    
+                    String name= f.name();
+                    
+                    if ( seePlotElement ) {
+                        seePlotElement= false; // breakpoint here for debugging.      
+                    }
+                    if ( byAlpha ) {
+                        if ( name.charAt(0)!=currentLetter ) {
+                            mdout.close();
+                            htmlout.close();
+                            currentLetter= name.charAt(0);
+                            mdf= new File( mddoc.toString() + "/" + s + "_"+ currentLetter + ".md" );
+                            htmlf= new File( htmldoc.toString() + "/" + s + "_"+ currentLetter + ".html" );
+                            loc=  s + "_" + currentLetter + ".md";
+                            mdout = new PrintStream(mdf);
+                            htmlout = new PrintStream(htmlf);
+                        }
+                    }
+                    
+                    StringBuilder sb= new StringBuilder();
+                    StringBuilder ahrefBuilder= new StringBuilder();
+
+                    ahrefBuilder.append("field: ").append(name);
+                    
+                    // <a name='accum(org.das2.qds.QDataSet,org.das2.qds.QDataSet)'></a> // note not standard JavaDoc.
+                    if ( haveIndicated(ahrefBuilder.toString())!=null ) {
+                        mdout.println("<a name=\""+ahrefBuilder.toString()+"\"></a>");
+                        htmlout.println("<a name=\""+ahrefBuilder.toString().replaceAll("\\.md",".html")+"\"></a>");
+                        continue;
+                    } else {
+                        indicated.put( ahrefBuilder.toString(), ahrefBuilder.toString() );
+                    }
+                    mdout.println("***");
+                    htmlout.println("<hr>");
+                    mdout.println("<a name=\""+ahrefBuilder.toString()+"\"></a>");
+                    htmlout.println("<a name=\""+ahrefBuilder.toString()+"\"></a>");
+                    mdout.println("# "+name);
+                    htmlout.println("<h1>"+name+"</h1>");
+                    
+                    mdout.println(sb.toString());
+                    htmlout.println(sb.toString());
+                    
+                    mdout.println("");
+                    htmlout.println("");
+                    mdout.println(f.commentText());
+                    htmlout.println("<p>"+f.commentText()+"</p>");
+                    
+                    mdout.println("");
+                    htmlout.println("");
+
+                    if ( byAlpha ) {
+                        grandIndex.put( name, s + "_"+ currentLetter + ".md#"+name.toLowerCase() );
+                    } else {
+                        grandIndex.put( name, s + ".md#"+name.toLowerCase() );
+                    }
+                    String firstSentence= f.commentText();
+                    grandIndexFirst.put( name, firstSentence.substring(0,Math.min(60,firstSentence.length()) ) );
+                    grandIndexClass.put( name, classe.qualifiedName() );
+                }
+                
                 for (int j = 0; j < Math.min( 20000, nmethod ); j++) {
                     MethodDoc m= methods[j];
+                    
+                    if ( !m.isPublic() ) continue;
                     
                     String name= m.name();
                     

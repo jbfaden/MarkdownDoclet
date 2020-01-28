@@ -154,7 +154,17 @@ public class DocletTip {
         
         boolean seePlotElement= false;
         
+        System.err.println("start157");
+        
         for (ClassDoc classe : classes) {
+            
+            String fullName= classe.qualifiedName();
+            
+            if ( fullName.startsWith("org.autoplot") || fullName.startsWith("org.das2") ) {
+                // do nothing.
+            } else {
+                continue;
+            }
             
             PrintStream mdout= null;
             PrintStream htmlout= null;
@@ -438,9 +448,15 @@ public class DocletTip {
             for ( String k: keys ) {
                 indexOut.print("<a href=\""+grandIndex.get(k)+"\">");
                 indexOut.print(k);
-                indexOut.print("</a> of "+ grandIndexClass.get(k) + " - " );
-                indexOut.print(markDownSafeSummary(grandIndexFirst.get(k)));
-                indexOut.println("<br>");
+                String s= markDownSafeSummary(grandIndexFirst.get(k));
+                if ( s.length()>0 ) {
+                    indexOut.print("</a> of "+ grandIndexClass.get(k) + " - " );
+                    indexOut.print(s);
+                    indexOut.println("<br>");
+                } else {
+                    indexOut.print("</a> of "+ grandIndexClass.get(k) );
+                    indexOut.println("<br>");
+                }
             }
         } catch ( IOException out ) {
             throw new IllegalStateException("could not write to "+grandIndexFile);
@@ -453,9 +469,15 @@ public class DocletTip {
             for ( String k: keys ) {
                 indexOut.print("<a href=\""+grandIndex.get(k).replaceAll("\\.md",".html")+"\">");
                 indexOut.print(k);
-                indexOut.print("</a> of "+ grandIndexClass.get(k) + " - " );
-                indexOut.print(markDownSafeSummary(grandIndexFirst.get(k)));
-                indexOut.println("<br>");
+                String s= markDownSafeSummary(grandIndexFirst.get(k));
+                if ( s.length()>0 ) {
+                    indexOut.print("</a> of "+ grandIndexClass.get(k) + " - " );
+                    indexOut.print(s);
+                    indexOut.println("<br>");
+                } else {
+                    indexOut.print("</a> of "+ grandIndexClass.get(k) );
+                    indexOut.println("<br>");
+                }
             }
         } catch ( IOException out ) {
             throw new IllegalStateException("could not write to "+grandIndexFile);

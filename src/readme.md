@@ -44,3 +44,7 @@ nudnik> find /home/jbf/project/autoplot/autoplot-code/ -name '*.java' | grep -v 
         | grep -v temp-classes | grep -v "/test/" | grep -v  "ProGAL" | grep -v "NetCdfDataSource" | grep -v VATesting > sources.txt
 nudnuk> javadoc -docletpath dist/MarkdownDoclet.jar -doclet tips.DocletTip -sourcepath @sources.txt
 ~~~~~
+
+The output from any of these is at     <br>
+/home/jbf/project/rbsp/git/autoplot/doc/ for markdown, and <br>
+/home/jbf/Linux/public_html/autoplot/doc/ for html.

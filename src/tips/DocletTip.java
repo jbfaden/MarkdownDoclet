@@ -117,6 +117,30 @@ public class DocletTip {
         
     }
     
+    /**
+     * return null or a URL for source.
+     * @param s
+     * @return 
+     */
+    private static String findLinkFor( String s ) {
+        int i= s.lastIndexOf("/");
+        if ( s.substring(0,i).equals("org/autoplot") ) {
+            String path= "https://sourceforge.net/p/autoplot/code/HEAD/tree/autoplot/trunk/Autoplot/src/";
+            return path + s + ".java";
+        } else if ( s.startsWith("org/das2/util") ) {
+            String path= "https://saturn.physics.uiowa.edu/svn/das2/dasCore/community/autoplot2011/trunk/dasCoreUtil/src/";
+            return path + s + ".java";
+        } else if ( s.startsWith("org/das2/datum") ) {
+            String path= "https://saturn.physics.uiowa.edu/svn/das2/dasCore/community/autoplot2011/trunk/dasCoreDatum/src/";
+            return path + s + ".java";
+        } else if ( s.startsWith("org/das2") ) {
+            String path= "https://saturn.physics.uiowa.edu/svn/das2/dasCore/community/autoplot2011/trunk/dasCore/src/";
+            return path + s + ".java";
+        } else {
+            return null;
+        }
+    }
+    
     private static final Map<String,String> indicated= new HashMap<>();
     
     /**
@@ -425,6 +449,10 @@ public class DocletTip {
                     mdout.println( String.format( "\n<a href=\"https://github.com/autoplot/dev/search?q=%s&unscoped_q=%s\">search for examples</a>", name, name ) );
                     htmlout.println( String.format( "<br><br>\n<a href=\"https://github.com/autoplot/dev/search?q=%s&unscoped_q=%s\">search for examples</a>", name, name ) );
                     htmlout.println( String.format( " <a href=\"https://github.com/autoplot/documentation/wiki/doc/%s\">view on GitHub</a>", loc ) );
+                    String p= findLinkFor(s);
+                    if ( p!=null ) {
+                        htmlout.println( String.format( " <a href=\"%s\">view source</a>", findLinkFor(s) ) );
+                    }
                     mdout.println("");
                     htmlout.println("<br>");
                     htmlout.println("<br>");

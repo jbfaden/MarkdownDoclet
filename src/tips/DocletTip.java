@@ -484,6 +484,8 @@ public class DocletTip {
             throw new IllegalStateException("could not write to "+grandIndexFile);
         }
         
+        System.err.println( "html output to " + htmldoc );
+        System.err.println( "marldown output to " + mddoc );
         return true;
     }
 } 

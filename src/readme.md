@@ -21,21 +21,26 @@ And to debug from Netbeans:
 spot7> javadoc -J-Xrunjdwp:server=y,transport=dt_socket,address=12345,suspend=y \
    -docletpath /home/jbf/ct/netbeansProjects/MarkdownDoclet/dist/MarkdownDoclet.jar \
    -doclet tips.DocletTip \
-   /home/jbf/temp/autoplot/QDataSet/src/org/das2/qds/ops/Ops.java
+   @sources.txt
+~~~~~
 ~~~~~
 
 ~~~~~
 nudnuk> cd /home/jbf/git/MarkdownDoclet/
 nudnuk> javadoc -J-Xrunjdwp:server=y,transport=dt_socket,address=12345,suspend=y \
-   -docletpath dist/MarkdownDoclet.jar -doclet tips.DocletTip -sourcepath @sources.txt
+   -docletpath /home/jbf/ct/netbeansProjects/MarkdownDoclet/dist/MarkdownDoclet.jar \
+   -doclet tips.DocletTip @sources.txt
 ~~~~~
 
 To run the entire lot:
 ~~~~~
-spot7> cd ~
-spot7> find temp/autoplot/ -name '*.java' | grep -v temp-src | grep -v temp-classes > sources.txt
-spot7> javadoc -docletpath /home/jbf/ct/netbeansProjects/MarkdownDoclet/dist/MarkdownDoclet.jar\
-   -doclet tips.DocletTip -sourcepath temp/autoplot/ @sources.txt
+spot7> cd /home/jbf/git/MarkdownDoclet
+spot7> find /home/jbf/temp/autoplot/ -name '*.java' | grep -v temp-src | grep -v temp-classes > sources.txt
+spot7> javadoc \
+   -docletpath /home/jbf/ct/netbeansProjects/MarkdownDoclet/dist/MarkdownDoclet.jar \
+   -doclet tips.DocletTip @sources.txt
+~~~~~
+
 ~~~~~
 
 ~~~~~
@@ -48,3 +53,5 @@ nudnuk> javadoc -docletpath dist/MarkdownDoclet.jar -doclet tips.DocletTip -sour
 The output from any of these is at     <br>
 /home/jbf/project/rbsp/git/autoplot/doc/ for markdown, and <br>
 /home/jbf/Linux/public_html/autoplot/doc/ for html.
+=======
+

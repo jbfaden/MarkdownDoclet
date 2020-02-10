@@ -315,14 +315,6 @@ public class DocletTip {
                     mdout.println("");
                     htmlout.println("");
 
-                    if ( byAlpha ) {
-                        grandIndex.put( name, s + "_"+ currentLetter + ".md#"+name.toLowerCase() );
-                    } else {
-                        grandIndex.put( name, s + ".md#"+name.toLowerCase() );
-                    }
-                    String firstSentence= f.commentText();
-                    grandIndexFirst.put( name, firstSentence.substring(0,Math.min(60,firstSentence.length()) ) );
-                    grandIndexClass.put( name, classe.qualifiedName() );
                 }
                 
                 for (int j = 0; j < Math.min( 20000, nmethod ); j++) {
@@ -517,7 +509,7 @@ public class DocletTip {
                 char firstChar= k.charAt(0);
                 if ( firstChar=='_' || Character.isUpperCase(firstChar) ) continue;
                 indexOut.print("<a href=\""+grandIndex.get(k).replaceAll("\\.md",".html")+"\">");
-                indexOut.print(k);
+                indexOut.print( grandIndexSignature.get(k) );
                 String s= markDownSafeSummary(grandIndexFirst.get(k));
                 if ( s.length()>0 ) {
                     indexOut.print("</a> of "+ grandIndexClass.get(k) + " - " );

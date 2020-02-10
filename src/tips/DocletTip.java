@@ -322,7 +322,7 @@ public class DocletTip {
                     if ( !m.isPublic() ) continue;
                     
                     String name= m.name();
-                    
+                                        
                     if ( byAlpha ) {
                         if ( name.charAt(0)!=currentLetter ) {
                             mdout.close();
@@ -348,7 +348,7 @@ public class DocletTip {
                         if ( k>0 ) signature.append(",");
                         Parameter pk= m.parameters()[k];
                         sb.append(colloquialName(pk.type().toString())).append(" ").append(pk.name());
-                        ahrefBuilder.append( fullTypeName(pk.typeName()) );
+                        ahrefBuilder.append( pk.type().toString() );
                         signature.append(pk.name());
                     }
                     ahrefBuilder.append(")");

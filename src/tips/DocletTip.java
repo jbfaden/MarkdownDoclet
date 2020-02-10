@@ -480,6 +480,7 @@ public class DocletTip {
             List<String> keys= new ArrayList( grandIndex.keySet() );
             Collections.sort(keys);
             for ( String k: keys ) {
+                if ( k.length()==0 ) continue;
                 indexOut.print("<a href=\""+grandIndex.get(k)+"\">");
                 if ( grandIndexSignature.containsKey(k) ) {
                     indexOut.print(grandIndexSignature.get(k));
@@ -505,7 +506,7 @@ public class DocletTip {
             List<String> keys= new ArrayList( grandIndex.keySet() );
             Collections.sort(keys);
             for ( String k: keys ) {
-                if ( k.length()>0 ) continue;
+                if ( k.length()==0 ) continue;
                 char firstChar= k.charAt(0);
                 if ( firstChar=='_' || Character.isUpperCase(firstChar) ) continue;
                 indexOut.print("<a href=\""+grandIndex.get(k).replaceAll("\\.md",".html")+"\">");

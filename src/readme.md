@@ -18,6 +18,7 @@ nudnik> javadoc -docletpath /home/jbf/git/MarkdownDoclet/dist/MarkdownDoclet.jar
 
 And to debug from Netbeans:
 ~~~~~
+spot7> cd /home/jbf/ct/netbeansProjects/MarkdownDoclet/ 
 spot7> javadoc -J-Xrunjdwp:server=y,transport=dt_socket,address=12345,suspend=y \
    -docletpath /home/jbf/ct/netbeansProjects/MarkdownDoclet/dist/MarkdownDoclet.jar \
    -doclet tips.DocletTip \
@@ -29,7 +30,8 @@ spot7> javadoc -J-Xrunjdwp:server=y,transport=dt_socket,address=12345,suspend=y 
 nudnuk> cd /home/jbf/git/MarkdownDoclet/
 nudnuk> javadoc -J-Xrunjdwp:server=y,transport=dt_socket,address=12345,suspend=y \
    -docletpath /home/jbf/ct/netbeansProjects/MarkdownDoclet/dist/MarkdownDoclet.jar \
-   -doclet tips.DocletTip @sources.txt
+   -doclet tips.DocletTip \
+   @sources.txt
 ~~~~~
 
 To run the entire lot:

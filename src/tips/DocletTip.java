@@ -28,7 +28,8 @@ import java.util.regex.Pattern;
  * From https://www.zdnet.com/article/customize-javadoc-output-with-doclets/
  * To re-run the source for http://autoplot.org/wiki/index.php?title=developer.scripting&action=edit&section=68
  * you would: javadoc -docletpath /home/jbf/eg/java/javadoclet/DocletTip/dist/DocletTip.jar -doclet tips.DocletTip /home/jbf/project/autoplot/autoplot-code/QDataSet/src/org/das2/qds/ops/Ops.java
-
+ *
+ * The system property 
  * @author jbf
  */
 public class DocletTip {
@@ -164,7 +165,7 @@ public class DocletTip {
      public static boolean start(RootDoc root) {
          
         String sdoc;
-        sdoc= System.getenv("mddoc");
+        sdoc= System.getenv("mddoc"); 
         if ( sdoc!=null )  mddoc= new File( sdoc );
         
         sdoc= System.getenv("htmldoc");
@@ -532,8 +533,8 @@ public class DocletTip {
         }
         
         System.err.println("****");
-        System.err.println("html documentation written to "+htmldoc);
-        System.err.println("md documentation written to "+mddoc);
+        System.err.println("htmldoc documentation written to "+htmldoc);
+        System.err.println("mddoc documentation written to "+mddoc);
         System.err.println("****");
         
         return true;

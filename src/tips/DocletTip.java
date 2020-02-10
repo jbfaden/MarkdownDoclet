@@ -33,8 +33,8 @@ import java.util.regex.Pattern;
  */
 public class DocletTip {
 
-    private static final File mddoc= new File("/home/jbf/project/rbsp/git/autoplot/doc/");
-    private static final File htmldoc= new File("/home/jbf/Linux/public_html/autoplot/doc/");
+    private static File mddoc= new File("/home/jbf/project/rbsp/git/autoplot/doc/");
+    private static File htmldoc= new File("/home/jbf/Linux/public_html/autoplot/doc/");
     
     /**
      * convert colloquial "QDataSet" to "org.das2.qds.QDataSet" and
@@ -162,6 +162,14 @@ public class DocletTip {
      * @return 
      */
      public static boolean start(RootDoc root) {
+         
+        String sdoc;
+        sdoc= System.getenv("mddoc");
+        if ( sdoc!=null )  mddoc= new File( sdoc );
+        
+        sdoc= System.getenv("htmldoc");
+        if ( sdoc!=null ) htmldoc= new File( sdoc );
+            
         ClassDoc[] classes = root.classes();
 
         if ( !mddoc.exists() ) {
@@ -522,6 +530,11 @@ public class DocletTip {
         } catch ( IOException out ) {
             throw new IllegalStateException("could not write to "+grandIndexFile);
         }
+        
+        System.err.println("****");
+        System.err.println("html documentation written to "+htmldoc);
+        System.err.println("md documentation written to "+mddoc);
+        System.err.println("****");
         
         return true;
     }

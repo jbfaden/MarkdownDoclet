@@ -328,7 +328,7 @@ public class DocletTip {
                     if ( !m.isPublic() ) continue;
                     
                     String name= m.name();
-                                        
+                   
                     if ( byAlpha ) {
                         if ( name.charAt(0)!=currentLetter ) {
                             mdout.close();
@@ -346,7 +346,7 @@ public class DocletTip {
                     StringBuilder sb= new StringBuilder();
                     StringBuilder ahrefBuilder= new StringBuilder();
                     sb.append(name).append("( ");
-                    ahrefBuilder.append(name).append("(");
+                    ahrefBuilder.append(name); //.append("(");
                     signature.append(name).append("(");
                     for ( int k=0; k<m.parameters().length; k++ ) {
                         if ( k>0 ) sb.append(", ");
@@ -354,20 +354,20 @@ public class DocletTip {
                         if ( k>0 ) signature.append(",");
                         Parameter pk= m.parameters()[k];
                         sb.append(colloquialName(pk.type().toString())).append(" ").append(pk.name());
-                        ahrefBuilder.append( pk.type().toString() );
+                        //ahrefBuilder.append( pk.type().toString() );
                         signature.append(pk.name());
                     }
-                    ahrefBuilder.append(")");
+                    //ahrefBuilder.append(")");
                     signature.append(")");
                     // <a name='accum(org.das2.qds.QDataSet,org.das2.qds.QDataSet)'></a> // note not standard JavaDoc.
                     sb.append(" ) &rarr; ").append( colloquialName(m.returnType().simpleTypeName() ) );
-                    if ( haveIndicated(ahrefBuilder.toString())!=null ) {
+                    if ( haveIndicated( name )==null ) {
                         mdout.println("<a name=\""+ahrefBuilder.toString()+"\"></a>");
                         htmlout.println("<a name=\""+ahrefBuilder.toString().replaceAll("\\.md",".html")+"\"></a>");
+                        indicated.put( name, ahrefBuilder.toString() );
                         continue;
-                    } else {
-                        indicated.put( ahrefBuilder.toString(), ahrefBuilder.toString() );
                     }
+                    
                     mdout.println("***");
                     htmlout.println("<hr>");
                     mdout.println("<a name=\""+ahrefBuilder.toString()+"\"></a>");
@@ -464,9 +464,9 @@ public class DocletTip {
                     htmlout.println("<br>");
                     
                     if ( byAlpha ) {
-                        grandIndex.put( name, s + "_"+ currentLetter + ".md#"+name.toLowerCase() );
+                        grandIndex.put( name, s + "_"+ currentLetter + ".md#"+name );
                     } else {
-                        grandIndex.put( name, s + ".md#"+name.toLowerCase() );
+                        grandIndex.put( name, s + ".md#"+name );
                     }
                     String firstSentence= m.commentText();
                     grandIndexFirst.put( name, firstSentence.substring(0,Math.min(60,firstSentence.length()) ) );
@@ -514,6 +514,9 @@ public class DocletTip {
                 if ( k.length()==0 ) continue;
                 char firstChar= k.charAt(0);
                 if ( firstChar=='_' || Character.isUpperCase(firstChar) ) continue;
+                if ( k.equals("getresolution") ) {
+                    System.err.println("here line 531");
+                }
                 indexOut.print("<a href=\""+grandIndex.get(k).replaceAll("\\.md",".html")+"\">");
                 indexOut.print( grandIndexSignature.get(k) );
                 String s= markDownSafeSummary(grandIndexFirst.get(k));

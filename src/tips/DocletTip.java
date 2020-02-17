@@ -29,7 +29,6 @@ import java.util.regex.Pattern;
  * To re-run the source for http://autoplot.org/wiki/index.php?title=developer.scripting&action=edit&section=68
  * you would: javadoc -docletpath /home/jbf/eg/java/javadoclet/DocletTip/dist/DocletTip.jar -doclet tips.DocletTip /home/jbf/project/autoplot/autoplot-code/QDataSet/src/org/das2/qds/ops/Ops.java
  *
- * The system property 
  * @author jbf
  */
 public class DocletTip {
@@ -256,6 +255,12 @@ public class DocletTip {
 
                 mdout = new PrintStream(mdf);
                 htmlout= new PrintStream(htmlf);
+                
+                mdout.append("# "+fullName );
+                htmlout.append("<h1>"+fullName+"</h1>");
+                
+                mdout.append( classe.commentText() ).append("\n");
+                htmlout.append("<p>").append(classe.commentText()).append("</p>\n");
                 
                 if ( !mdf.getParentFile().exists() ) {
                     if ( !mdf.getParentFile().mkdirs() ) throw new IllegalStateException("can't make dir");

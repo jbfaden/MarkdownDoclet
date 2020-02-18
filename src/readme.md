@@ -6,6 +6,9 @@ ignore the html output.
 
 https://docs.oracle.com/javase/7/docs/jdk/api/javadoc/doclet/
 
+Note that I found later that there are issues with using Markdown for the 
+popup in Autoplot, so a simplified HTML version is created as well.
+
 <hr>
 
 # Running at Cottage Systems Headquarters or on Campus
@@ -55,5 +58,4 @@ nudnuk> javadoc -docletpath dist/MarkdownDoclet.jar -doclet tips.DocletTip -sour
 The output from any of these is at     <br>
 /home/jbf/project/rbsp/git/autoplot/doc/ for markdown, and <br>
 /home/jbf/Linux/public_html/autoplot/doc/ for html.
-=======
 

@@ -444,6 +444,13 @@ public class DocletTip {
                             link= link.substring(0,ii);
                         }
                         
+                        int i= link.indexOf("#");
+                        if ( i>-1 ) {
+                            link= link.substring(0,i) + ".md" + link.substring(i);
+                        } else {
+                            link= link + ".md";
+                        }
+                        
                         if ( t.label()==null ) {
                             mdout.println("<a href='"+link+"'>" + seeAlsoLabel(l) +"</a><br>" );
                             htmlout.println( "<a href='"+link.replaceAll("\\.md",".html")+"'>" + seeAlsoLabel(l) +"</a><br>" );
@@ -534,6 +541,7 @@ public class DocletTip {
         }
         
         System.err.println("****");
+        System.err.println("v20200218_0817");
         System.err.println("htmldoc documentation written to "+htmldoc);
         System.err.println("mddoc documentation written to "+mddoc);
         System.err.println("****");

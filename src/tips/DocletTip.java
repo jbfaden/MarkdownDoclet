@@ -334,7 +334,7 @@ public class DocletTip {
                     if ( !m.isPublic() ) continue;
                     
                     String name= m.name();
-                   
+
                     if ( byAlpha ) {
                         if ( name.charAt(0)!=currentLetter ) {
                             mdout.close();
@@ -346,8 +346,8 @@ public class DocletTip {
                             mdout = new PrintStream(mdf);
                             htmlout = new PrintStream(htmlf);
                         }
-                    }
-                    
+                    }               
+
                     StringBuilder signature= new StringBuilder();
                     StringBuilder sb= new StringBuilder();
                     StringBuilder ahrefBuilder= new StringBuilder();
@@ -379,8 +379,21 @@ public class DocletTip {
                     htmlout.println("<hr>");
                     mdout.println("<a name=\""+ahrefBuilder.toString()+"\"></a>");
                     htmlout.println("<a name=\""+ahrefBuilder.toString()+"\"></a>");
-                    mdout.println("# "+name);
-                    htmlout.println("<h1>"+name+"</h1>");
+                    
+                    
+                    Tag[] deprecatedTags= m.tags("deprecated");
+                    boolean isDeprecated=  deprecatedTags.length>0 ;
+                    
+                    if ( isDeprecated ) {
+                        mdout.println("# <del>"+name + "</del>");
+                        mdout.println("Deprecated: " + deprecatedTags[0].text());
+                        htmlout.println("<h1><del>"+name+"</del></h1>");
+                        htmlout.println("Deprecated: " + deprecatedTags[0].text());
+                        continue;
+                    } else {
+                        mdout.println("# "+name);
+                        htmlout.println("<h1>"+name+"</h1>");
+                    }
                     
                     mdout.println(sb.toString());
                     htmlout.println(sb.toString());

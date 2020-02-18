@@ -23,7 +23,7 @@ And to debug from Netbeans:
 ~~~~~
 spot7> cd /home/jbf/ct/netbeansProjects/MarkdownDoclet/ 
 spot7> javadoc -J-Xrunjdwp:server=y,transport=dt_socket,address=12345,suspend=y \
-   -docletpath /home/jbf/ct/netbeansProjects/MarkdownDoclet/dist/MarkdownDoclet.jar \
+   -docletpath /home/jbf/git/MarkdownDoclet/dist/MarkdownDoclet.jar \
    -doclet tips.DocletTip \
    @sources.txt
 ~~~~~
@@ -42,7 +42,7 @@ To run the entire lot:
 spot7> cd /home/jbf/git/MarkdownDoclet
 spot7> find /home/jbf/temp/autoplot/ -name '*.java' | grep -v temp-src | grep -v temp-classes > sources.txt
 spot7> javadoc \
-   -docletpath /home/jbf/ct/netbeansProjects/MarkdownDoclet/dist/MarkdownDoclet.jar \
+   -docletpath /home/jbf/git/MarkdownDoclet/dist/MarkdownDoclet.jar \
    -doclet tips.DocletTip @sources.txt
 ~~~~~
 

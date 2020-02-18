@@ -157,6 +157,34 @@ public class DocletTip {
     }
     
     /**
+     * introduced to handle {&at;code } blocks.
+     * @param commentText
+     * @return 
+     */
+    private static String handleText(String commentText) {
+        Pattern p= Pattern.compile("(.*)\\{\\@code(.*)\\}(\\s*)\\</pre>(.*)");
+        int i= commentText.indexOf("{@code");
+        while ( i!=-1 ) {
+            StringBuilder b;
+            b= new StringBuilder(commentText.substring(0,i));
+            int i2= commentText.indexOf("}",i);
+            if ( i2==-1 ) {
+                i2= commentText.length();
+            }
+            try {
+                b.append(commentText.substring(i+6,i2));
+                if ( i2<commentText.length() ) b.append(commentText.substring(i2+1));
+            } catch ( StringIndexOutOfBoundsException ex ) {
+                b.append(commentText.substring(i+6,i2));
+                if ( i2<commentText.length() ) b.append(commentText.substring(i2+1));
+            }
+            commentText= b.toString();
+            i= commentText.indexOf("{@code");
+        } 
+        return commentText;
+    }
+    
+    /**
      * 
      * @param root
      * @return 
@@ -335,6 +363,10 @@ public class DocletTip {
                     
                     String name= m.name();
 
+                    //if ( name.equals("createDummyPlot") ) {
+                    //    System.err.println("handling the method: "+name);
+                    //}
+                    
                     if ( byAlpha ) {
                         if ( name.charAt(0)!=currentLetter ) {
                             mdout.close();
@@ -400,22 +432,27 @@ public class DocletTip {
                     
                     mdout.println("");
                     htmlout.println("");
-                    mdout.println(m.commentText());
-                    htmlout.println("<p>"+m.commentText()+"</p>");
                     
-                    mdout.println("");
-                    htmlout.println("");
-                    mdout.println("### Parameters:" );
-                    htmlout.println("<h3>Parameters</h3>" );
-                    for ( int k=0; k<m.paramTags().length; k++ ) {
-                        ParamTag pt= m.paramTags()[k];
-                        if ( k>0 ) {
-                            mdout.print("<br>");
-                            htmlout.println("<br>");
+                    String comments= handleText(m.commentText());
+                    mdout.println(comments);
+                    htmlout.println("<p>"+comments+"</p>");
+                    
+                    if ( m.paramTags().length>0 ) {
+                        mdout.println("");
+                        htmlout.println("");
+                        mdout.println("### Parameters:" );
+                        htmlout.println("<h3>Parameters</h3>" );
+                        for ( int k=0; k<m.paramTags().length; k++ ) {
+                            ParamTag pt= m.paramTags()[k];
+                            if ( k>0 ) {
+                                mdout.print("<br>");
+                                htmlout.println("<br>");
+                            }
+                            mdout.println(""+pt.parameterName() + " - " + pt.parameterComment() );
+                            htmlout.println(""+pt.parameterName() + " - " + pt.parameterComment() );
                         }
-                        mdout.println(""+pt.parameterName() + " - " + pt.parameterComment() );
-                        htmlout.println(""+pt.parameterName() + " - " + pt.parameterComment() );
                     }
+                    
                     mdout.println("");
                     htmlout.println("");
                     mdout.println("### Returns:" );
@@ -433,8 +470,14 @@ public class DocletTip {
                             htmlout.println( "" );
                         }
                     } else {
-                        mdout.println( m.returnType().toString() );
-                        htmlout.println( m.returnType().toString() );
+                        String s1= m.returnType().toString();
+                        if ( s1.equals("void") ) {
+                            mdout.println( "void (returns nothing)" );
+                            htmlout.println( "void (returns nothing)" );
+                        } else {
+                            mdout.println( s1 );
+                            htmlout.println( s1 );
+                        }
                         mdout.println("");
                         htmlout.println("");
                     }

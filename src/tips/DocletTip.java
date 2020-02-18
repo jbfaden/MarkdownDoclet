@@ -388,7 +388,7 @@ public class DocletTip {
                     signature.append(name).append("(");
                     for ( int k=0; k<m.parameters().length; k++ ) {
                         if ( k>0 ) sb.append(", ");
-                        if ( k>0 ) ahrefBuilder.append(",");
+                        //if ( k>0 ) ahrefBuilder.append(",");
                         if ( k>0 ) signature.append(",");
                         Parameter pk= m.parameters()[k];
                         sb.append(colloquialName(pk.type().toString())).append(" ").append(pk.name());
@@ -611,7 +611,7 @@ public class DocletTip {
         }
         
         System.err.println("****");
-        System.err.println("v20200218_0817");
+        System.err.println("v20200218_1717");
         System.err.println("htmldoc documentation written to "+htmldoc);
         System.err.println("mddoc documentation written to "+mddoc);
         System.err.println("****");

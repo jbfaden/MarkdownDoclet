@@ -478,7 +478,7 @@ public class DocletTip {
                     htmlout.println( String.format( " <a href=\"https://github.com/autoplot/documentation/wiki/doc/%s\">view on GitHub</a>", loc ) );
                     String p= findLinkFor(s);
                     if ( p!=null ) {
-                        htmlout.println( String.format( " <a href=\"%s\">view source</a>", findLinkFor(s) ) );
+                        htmlout.println( String.format( " <a href=\"%s\">view source</a>", p ) );
                     }
                     mdout.println("");
                     htmlout.println("<br>");

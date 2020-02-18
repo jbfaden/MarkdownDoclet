@@ -197,6 +197,12 @@ public class DocletTip {
                 continue;
             }
             
+            //if ( fullName.startsWith("org.autoplot.AutoplotUI" ) ) {
+            //    System.err.println("found it");
+            //} else {
+            //    continue;
+            //}
+            
             PrintStream mdout= null;
             PrintStream htmlout;
             try {
@@ -365,6 +371,7 @@ public class DocletTip {
                         mdout.println("<a name=\""+ahrefBuilder.toString()+"\"></a>");
                         htmlout.println("<a name=\""+ahrefBuilder.toString().replaceAll("\\.md",".html")+"\"></a>");
                         indicated.put( name, ahrefBuilder.toString() );
+                    } else {
                         continue;
                     }
                     
@@ -424,6 +431,11 @@ public class DocletTip {
                         mdout.println("### See Also:");
                         htmlout.println("<h3>See Also:</h3>");
                     }
+                     
+                    //if ( name.equals("setLeftPanel") ) {
+                    //    System.err.println("here setLeft");
+                    //}
+                    
                     for (Tag seeTag : seeTags) {
                         SeeTag t = (SeeTag) seeTag;
                         int it= t.text().indexOf(')');
@@ -445,8 +457,10 @@ public class DocletTip {
                         }
                         
                         int i= link.indexOf("#");
-                        if ( i>-1 ) {
+                        if ( i>0 ) {
                             link= link.substring(0,i) + ".md" + link.substring(i);
+                        } else if ( i==0 ) {
+                            //do nothing;
                         } else {
                             link= link + ".md";
                         }

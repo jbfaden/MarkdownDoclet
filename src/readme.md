@@ -59,3 +59,7 @@ The output from any of these is at     <br>
 /home/jbf/project/rbsp/git/autoplot/doc/ for markdown, and <br>
 /home/jbf/Linux/public_html/autoplot/doc/ for html.
 
+
+<hr>
+To build from command line, use just "ant jar".
+

@@ -21,7 +21,7 @@ nudnik> javadoc -docletpath /home/jbf/git/MarkdownDoclet/dist/MarkdownDoclet.jar
 
 And to debug from Netbeans:
 ~~~~~
-spot7> cd /home/jbf/ct/netbeansProjects/MarkdownDoclet/ 
+spot7> cd /home/jbf/git/MarkdownDoclet/ 
 spot7> javadoc -J-Xrunjdwp:server=y,transport=dt_socket,address=12345,suspend=y \
    -docletpath /home/jbf/git/MarkdownDoclet/dist/MarkdownDoclet.jar \
    -doclet tips.DocletTip \

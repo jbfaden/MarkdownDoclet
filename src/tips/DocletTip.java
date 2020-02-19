@@ -247,7 +247,7 @@ public class DocletTip {
 //            }
             
             PrintStream mdout= null;
-            PrintStream htmlout;
+            PrintStream htmlout= null;
             try {
                 String s = classe.qualifiedName();
                 if ( s.endsWith("PlotElement") ) {
@@ -571,7 +571,9 @@ public class DocletTip {
             }catch (FileNotFoundException ex) {
                 Logger.getLogger(DocletTip.class.getName()).log(Level.SEVERE, null, ex);
             } finally {
-                mdout.close();
+                System.err.println("here574: "+mdout + " " + htmlout );
+                if (mdout!=null) mdout.close();
+                if (htmlout!=null) htmlout.close();
             }
         }
         
@@ -609,9 +611,9 @@ public class DocletTip {
                 if ( k.length()==0 ) continue;
                 char firstChar= k.charAt(0);
                 if ( firstChar=='_' || Character.isUpperCase(firstChar) ) continue;
-                if ( k.equals("getresolution") ) {
-                    System.err.println("here line 531");
-                }
+                //if ( k.equals("getresolution") ) {
+                //    System.err.println("here line 531");
+                //}
                 indexOut.print("<a href=\""+grandIndex.get(k).replaceAll("\\.md",".html")+"\">");
                 indexOut.print( grandIndexSignature.get(k) );
                 String s= markDownSafeSummary(grandIndexFirst.get(k));
@@ -629,7 +631,7 @@ public class DocletTip {
         }
         
         System.err.println("****");
-        System.err.println("v20200219_0732");
+        System.err.println("v20200219_0842");
         System.err.println("htmldoc documentation written to "+htmldoc);
         System.err.println("mddoc documentation written to "+mddoc);
         System.err.println("****");

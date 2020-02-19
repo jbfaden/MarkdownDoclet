@@ -225,11 +225,11 @@ public class DocletTip {
                 continue;
             }
             
-            //if ( fullName.startsWith("org.autoplot.AutoplotUI" ) ) {
-            //    System.err.println("found it");
-            //} else {
-            //    continue;
-            //}
+            if ( fullName.startsWith("org.autoplot.jythonsupport.Util" ) ) {
+                System.err.println("found class: "+fullName);
+            } else {
+                continue;
+            }
             
             PrintStream mdout= null;
             PrintStream htmlout;
@@ -300,6 +300,7 @@ public class DocletTip {
                     if ( !mdf.getParentFile().mkdirs() ) throw new IllegalStateException("can't make dir");
                 }
                 
+                // loop over fields
                 for (int j = 0; j < Math.min( 20000, nfields ); j++) {
                     FieldDoc f= fields[j];
                     
@@ -356,6 +357,7 @@ public class DocletTip {
 
                 }
                 
+                // loop over methods 
                 for (int j = 0; j < Math.min( 20000, nmethod ); j++) {
                     MethodDoc m= methods[j];
                     
@@ -363,7 +365,7 @@ public class DocletTip {
                     
                     String name= m.name();
 
-                    //if ( name.equals("createDummyPlot") ) {
+                    //if ( name.equals("getDataSet") && fullName.contains("jythonsupport" ) ) {
                     //    System.err.println("handling the method: "+name);
                     //}
                     

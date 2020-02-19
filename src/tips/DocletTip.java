@@ -119,20 +119,35 @@ public class DocletTip {
     
     /**
      * return null or a URL for source.
-     * @param s
+     * @param s the class name
+     * @param linenum the line number of the documentation.
      * @return 
+     * //TODO: I have a nice Map class somewhere that does hierarchical lookup on IP, which could be used here. 
      */
-    private static String findLinkFor( String s ) {
+    private static String findLinkFor( String s, int linenum ) {
         int i= s.lastIndexOf("/");
-        if ( s.substring(0,i).equals("org/autoplot") ) {
+        String sline="#l"+linenum;
+        if ( s.startsWith("org/autoplot/datasource") ) {
+            String path= "https://sourceforge.net/p/autoplot/code/HEAD/tree/autoplot/trunk/DataSource/src/";
+            return path + s + ".java" + sline;
+        } else if ( s.startsWith("org/autoplot/jythonsupport") ) {
+            String path= "https://sourceforge.net/p/autoplot/code/HEAD/tree/autoplot/trunk/JythonSupport/src/";
+            return path + s + ".java"+ sline;
+        } else if ( s.startsWith("org/autoplot/dom") ) {
             String path= "https://sourceforge.net/p/autoplot/code/HEAD/tree/autoplot/trunk/Autoplot/src/";
-            return path + s + ".java";
+            return path + s + ".java"+ sline;
+        } else if ( s.substring(0,i).equals("org/autoplot") ) {
+            String path= "https://sourceforge.net/p/autoplot/code/HEAD/tree/autoplot/trunk/Autoplot/src/";
+            return path + s + ".java"+ sline;
         } else if ( s.startsWith("org/das2/util") ) {
             String path= "https://saturn.physics.uiowa.edu/svn/das2/dasCore/community/autoplot2011/trunk/dasCoreUtil/src/";
             return path + s + ".java";
         } else if ( s.startsWith("org/das2/datum") ) {
             String path= "https://saturn.physics.uiowa.edu/svn/das2/dasCore/community/autoplot2011/trunk/dasCoreDatum/src/";
             return path + s + ".java";
+        } else if ( s.startsWith("org/das2/qds") ) {
+            String path= "https://sourceforge.net/p/autoplot/code/HEAD/tree/autoplot/trunk/QDataSet/src/";
+            return path + s + ".java"+ sline;
         } else if ( s.startsWith("org/das2") ) {
             String path= "https://saturn.physics.uiowa.edu/svn/das2/dasCore/community/autoplot2011/trunk/dasCore/src/";
             return path + s + ".java";
@@ -224,12 +239,12 @@ public class DocletTip {
             } else {
                 continue;
             }
-            
-            if ( fullName.startsWith("org.autoplot.jythonsupport.Util" ) ) {
-                System.err.println("found class: "+fullName);
-            } else {
-                continue;
-            }
+
+//            if ( fullName.startsWith("org.autoplot.jythonsupport.Util" ) ) {
+//                System.err.println("found class: "+fullName);
+//            } else {
+//                continue;
+//            }
             
             PrintStream mdout= null;
             PrintStream htmlout;
@@ -534,7 +549,8 @@ public class DocletTip {
                     mdout.println( String.format( "\n<a href=\"https://github.com/autoplot/dev/search?q=%s&unscoped_q=%s\">search for examples</a>", name, name ) );
                     htmlout.println( String.format( "<br><br>\n<a href=\"https://github.com/autoplot/dev/search?q=%s&unscoped_q=%s\">search for examples</a>", name, name ) );
                     htmlout.println( String.format( " <a href=\"https://github.com/autoplot/documentation/wiki/doc/%s\">view on GitHub</a>", loc ) );
-                    String p= findLinkFor(s);
+                    int linenum= m.position().line();
+                    String p= findLinkFor(s,linenum);
                     if ( p!=null ) {
                         htmlout.println( String.format( " <a href=\"%s\">view source</a>", p ) );
                     }
@@ -613,7 +629,7 @@ public class DocletTip {
         }
         
         System.err.println("****");
-        System.err.println("v20200218_1717");
+        System.err.println("v20200219_0732");
         System.err.println("htmldoc documentation written to "+htmldoc);
         System.err.println("mddoc documentation written to "+mddoc);
         System.err.println("****");

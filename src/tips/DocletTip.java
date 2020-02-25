@@ -381,10 +381,9 @@ public class DocletTip {
                     
                     String name= m.name();
 
-                    //if ( name.equals("fftPower") && fullName.contains("org.das2.qds" ) ) {
-                    //    System.err.println("handling the method: "+name);
-                    //    alsoPrint= true;
-                    //}
+                    if ( name.equals("fftPower") && fullName.contains("org.das2.math" ) ) {
+                        System.err.println("handling the method: "+name);
+                    }
                     
                     if ( byAlpha ) {
                         if ( name.charAt(0)!=currentLetter ) {
@@ -419,13 +418,13 @@ public class DocletTip {
                     // <a name='accum(org.das2.qds.QDataSet,org.das2.qds.QDataSet)'></a> // note not standard JavaDoc.
                     sb.append(" ) &rarr; ").append( colloquialName(m.returnType().simpleTypeName() ) );
                     
-                    if ( haveIndicated( name )!=null ) {
+                    if ( haveIndicated( fullName + "." + name )!=null ) {
                         mdout.println(sb.toString()); //TODO: these appear after.
                         htmlout.println(sb.toString());
                         continue;
                     }
                     
-                    indicated.put( name, ahrefBuilder.toString() );
+                    indicated.put( fullName + "." + name, ahrefBuilder.toString() );
                     
                     mdout.println("***");
                     htmlout.println("<hr>");
@@ -457,19 +456,25 @@ public class DocletTip {
                     mdout.println(comments);
                     htmlout.println("<p>"+comments+"</p>");
                     
-                    if ( m.paramTags().length>0 ) {
+                    if ( m.parameters().length>0 ) {
+                        Map<String,ParamTag> pat= new HashMap<>();
+                        for ( ParamTag pt: m.paramTags() ) {
+                            pat.put( pt.parameterName(), pt );
+                        }
                         mdout.println("");
                         htmlout.println("");
                         mdout.println("### Parameters:" );
                         htmlout.println("<h3>Parameters</h3>" );
-                        for ( int k=0; k<m.paramTags().length; k++ ) {
-                            ParamTag pt= m.paramTags()[k];
+                        for ( int k=0; k<m.parameters().length; k++ ) {
+                            Parameter parameter= m.parameters()[k];
                             if ( k>0 ) {
                                 mdout.print("<br>");
                                 htmlout.println("<br>");
                             }
-                            mdout.println(""+pt.parameterName() + " - " + pt.parameterComment() );
-                            htmlout.println(""+pt.parameterName() + " - " + pt.parameterComment() );
+                            ParamTag pt1= pat.get(parameter.name());
+                            String comment= pt1==null ? "" : pt1.parameterComment();
+                            mdout.println(""+parameter.name() + " - " + comment );
+                            htmlout.println(""+parameter.name() + " - " + comment );
                         }
                     }
                     

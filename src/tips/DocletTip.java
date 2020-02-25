@@ -372,7 +372,8 @@ public class DocletTip {
 
                 }
                 
-                // loop over methods 
+                // ** loop over methods **
+                
                 for (int j = 0; j < Math.min( 20000, nmethod ); j++) {
                     MethodDoc m= methods[j];
                     
@@ -380,8 +381,9 @@ public class DocletTip {
                     
                     String name= m.name();
 
-                    //if ( name.equals("getDataSet") && fullName.contains("jythonsupport" ) ) {
+                    //if ( name.equals("fftPower") && fullName.contains("org.das2.qds" ) ) {
                     //    System.err.println("handling the method: "+name);
+                    //    alsoPrint= true;
                     //}
                     
                     if ( byAlpha ) {
@@ -416,13 +418,14 @@ public class DocletTip {
                     signature.append(")");
                     // <a name='accum(org.das2.qds.QDataSet,org.das2.qds.QDataSet)'></a> // note not standard JavaDoc.
                     sb.append(" ) &rarr; ").append( colloquialName(m.returnType().simpleTypeName() ) );
-                    if ( haveIndicated( name )==null ) {
-                        mdout.println("<a name=\""+ahrefBuilder.toString()+"\"></a>");
-                        htmlout.println("<a name=\""+ahrefBuilder.toString().replaceAll("\\.md",".html")+"\"></a>");
-                        indicated.put( name, ahrefBuilder.toString() );
-                    } else {
+                    
+                    if ( haveIndicated( name )!=null ) {
+                        mdout.println(sb.toString()); //TODO: these appear after.
+                        htmlout.println(sb.toString());
                         continue;
                     }
+                    
+                    indicated.put( name, ahrefBuilder.toString() );
                     
                     mdout.println("***");
                     htmlout.println("<hr>");
@@ -571,7 +574,6 @@ public class DocletTip {
             }catch (FileNotFoundException ex) {
                 Logger.getLogger(DocletTip.class.getName()).log(Level.SEVERE, null, ex);
             } finally {
-                System.err.println("here574: "+mdout + " " + htmlout );
                 if (mdout!=null) mdout.close();
                 if (htmlout!=null) htmlout.close();
             }

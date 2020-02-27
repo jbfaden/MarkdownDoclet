@@ -381,9 +381,9 @@ public class DocletTip {
                     
                     String name= m.name();
 
-                    if ( name.equals("fftPower") && fullName.contains("org.das2.math" ) ) {
-                        System.err.println("handling the method: "+name);
-                    }
+                    //if ( name.equals("fftPower") && fullName.contains("org.das2.math" ) ) {
+                    //    System.err.println("handling the method: "+name);
+                    //}
                     
                     if ( byAlpha ) {
                         if ( name.charAt(0)!=currentLetter ) {

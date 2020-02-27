@@ -2,6 +2,8 @@
 package tips;
 
 import com.sun.javadoc.ClassDoc;
+import com.sun.javadoc.ConstructorDoc;
+import com.sun.javadoc.ExecutableMemberDoc;
 import com.sun.javadoc.FieldDoc;
 import com.sun.javadoc.MethodDoc;
 import com.sun.javadoc.ParamTag;
@@ -199,6 +201,43 @@ public class DocletTip {
         return commentText;
     }
     
+    private static void signature( 
+            StringBuilder sb, 
+            StringBuilder ahrefBuilder, 
+            StringBuilder signature,
+            ExecutableMemberDoc m ) {
+        
+        String name= m.name();
+        
+        sb.append(name).append("( ");
+        ahrefBuilder.append(name); //.append("(");
+        signature.append(name).append("(");
+        for ( int k=0; k<m.parameters().length; k++ ) {
+            if ( k>0 ) sb.append(", ");
+            //if ( k>0 ) ahrefBuilder.append(",");
+            if ( k>0 ) signature.append(",");
+            Parameter pk= m.parameters()[k];
+            sb.append(colloquialName(pk.type().toString())).append(" ").append(pk.name());
+            //ahrefBuilder.append( pk.type().toString() );
+            signature.append(pk.name());
+        }                    
+        
+        signature.append(")");
+        
+        if ( m instanceof MethodDoc ) {
+            MethodDoc md= (MethodDoc)m;
+            sb.append(" ) &rarr; ").append( colloquialName(md.returnType().simpleTypeName() ) );
+        } else {
+            if ( m.parameters().length>0 ) {
+                sb.append(" )");
+            } else {
+                sb.append(")");
+            }
+            
+        }
+                    
+    }
+    
     /**
      * 
      * @param root
@@ -270,7 +309,6 @@ public class DocletTip {
                     throw new IllegalStateException("didn't find upper case letter");
                 }
                 MethodDoc[] methods = classe.methods();   
-                FieldDoc[] fields= classe.fields();
                 
                 Arrays.sort( methods, (MethodDoc o1, MethodDoc o2) -> o1.name().compareTo(o2.name()) );
                 int nmethod= methods.length;
@@ -291,8 +329,6 @@ public class DocletTip {
                     htmlf= new File( htmldoc.toString() + "/" + s + ".html" );
                 }
                 
-                int nfields= fields.length;
-                
                 File d= mdf.getParentFile();
                 if ( !d.exists() ) {
                     if ( !d.mkdirs() ) throw new IllegalStateException("can't make dir: "+d);
@@ -306,7 +342,7 @@ public class DocletTip {
                 htmlout= new PrintStream(htmlf);
                 
                 mdout.append("# "+fullName );
-                htmlout.append("<h1>"+fullName+"</h1>");
+                htmlout.append("<h2>"+fullName+"</h2>");
                 
                 mdout.append( classe.commentText() ).append("\n");
                 htmlout.append("<p>").append(classe.commentText()).append("</p>\n");
@@ -315,7 +351,35 @@ public class DocletTip {
                     if ( !mdf.getParentFile().mkdirs() ) throw new IllegalStateException("can't make dir");
                 }
                 
+                // constructors
+                ConstructorDoc[] constructors= classe.constructors();
+                for ( int j=0; j<constructors.length; j++ ) {
+                    ConstructorDoc c= constructors[j];
+                    if ( !c.isPublic() ) continue;
+                                               
+                    StringBuilder signature= new StringBuilder();
+                    StringBuilder sb= new StringBuilder();
+                    StringBuilder ahrefBuilder= new StringBuilder();
+                    
+                    signature( sb, ahrefBuilder, signature, c);
+                    
+                    mdout.println( sb.toString() );
+                    htmlout.println("<h2>"+sb.toString() +"</h2>");
+                    
+                    mdout.println(c.commentText());
+                    htmlout.println("<p>"+c.commentText()+"</p>");
+                    
+                    mdout.println("");
+                    htmlout.println("");                    
+                    
+                    
+                }
+                
                 // loop over fields
+                FieldDoc[] fields= classe.fields();
+
+                int nfields= fields.length;                
+
                 for (int j = 0; j < Math.min( 20000, nfields ); j++) {
                     FieldDoc f= fields[j];
                     
@@ -326,19 +390,7 @@ public class DocletTip {
                     if ( seePlotElement ) {
                         seePlotElement= false; // breakpoint here for debugging.      
                     }
-                    if ( byAlpha ) {
-                        if ( name.charAt(0)!=currentLetter ) {
-                            mdout.close();
-                            htmlout.close();
-                            currentLetter= name.charAt(0);
-                            mdf= new File( mddoc.toString() + "/" + s + "_"+ currentLetter + ".md" );
-                            htmlf= new File( htmldoc.toString() + "/" + s + "_"+ currentLetter + ".html" );
-                            loc=  s + "_" + currentLetter + ".md";
-                            mdout = new PrintStream(mdf);
-                            htmlout = new PrintStream(htmlf);
-                        }
-                    }
-                    
+                                        
                     StringBuilder sb= new StringBuilder();
                     StringBuilder ahrefBuilder= new StringBuilder();
 
@@ -357,7 +409,7 @@ public class DocletTip {
                     mdout.println("<a name=\""+ahrefBuilder.toString()+"\"></a>");
                     htmlout.println("<a name=\""+ahrefBuilder.toString()+"\"></a>");
                     mdout.println("# "+name);
-                    htmlout.println("<h1>"+name+"</h1>");
+                    htmlout.println("<h2>"+name+"</h2>");
                     
                     mdout.println(sb.toString());
                     htmlout.println(sb.toString());
@@ -401,26 +453,12 @@ public class DocletTip {
                     StringBuilder signature= new StringBuilder();
                     StringBuilder sb= new StringBuilder();
                     StringBuilder ahrefBuilder= new StringBuilder();
-                    sb.append(name).append("( ");
-                    ahrefBuilder.append(name); //.append("(");
-                    signature.append(name).append("(");
-                    for ( int k=0; k<m.parameters().length; k++ ) {
-                        if ( k>0 ) sb.append(", ");
-                        //if ( k>0 ) ahrefBuilder.append(",");
-                        if ( k>0 ) signature.append(",");
-                        Parameter pk= m.parameters()[k];
-                        sb.append(colloquialName(pk.type().toString())).append(" ").append(pk.name());
-                        //ahrefBuilder.append( pk.type().toString() );
-                        signature.append(pk.name());
-                    }
-                    //ahrefBuilder.append(")");
-                    signature.append(")");
-                    // <a name='accum(org.das2.qds.QDataSet,org.das2.qds.QDataSet)'></a> // note not standard JavaDoc.
-                    sb.append(" ) &rarr; ").append( colloquialName(m.returnType().simpleTypeName() ) );
+                    
+                    signature( sb, ahrefBuilder, signature, m );
                     
                     if ( haveIndicated( fullName + "." + name )!=null ) {
-                        mdout.println(sb.toString()); //TODO: these appear after.
-                        htmlout.println(sb.toString());
+                        mdout.println(sb.toString()+"<br>"); //TODO: these appear after.
+                        htmlout.println(sb.toString()+"<br>");
                         continue;
                     }
                     
@@ -438,12 +476,12 @@ public class DocletTip {
                     if ( isDeprecated ) {
                         mdout.println("# <del>"+name + "</del>");
                         mdout.println("Deprecated: " + deprecatedTags[0].text());
-                        htmlout.println("<h1><del>"+name+"</del></h1>");
+                        htmlout.println("<h2><del>"+name+"</del></h2>");
                         htmlout.println("Deprecated: " + deprecatedTags[0].text());
                         continue;
                     } else {
                         mdout.println("# "+name);
-                        htmlout.println("<h1>"+name+"</h1>");
+                        htmlout.println("<h2>"+name+"</h2>");
                     }
                     
                     mdout.println(sb.toString());

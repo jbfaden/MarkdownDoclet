@@ -331,11 +331,15 @@ public class DocletTip {
                 
                 File d= mdf.getParentFile();
                 if ( !d.exists() ) {
-                    if ( !d.mkdirs() ) throw new IllegalStateException("can't make dir: "+d);
+                    if ( !d.mkdirs() ) {
+                        throw new IllegalStateException("can't make dir: "+d);
+                    }
                 }
                 d= htmlf.getParentFile();
                 if ( !d.exists() ) {
-                    if ( !d.mkdirs() ) throw new IllegalStateException("can't make dir: "+d);
+                    if ( !d.mkdirs() ) {
+                        throw new IllegalStateException("can't make dir: "+d);
+                    }
                 }
 
                 mdout = new PrintStream(mdf);

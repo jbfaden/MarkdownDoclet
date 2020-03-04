@@ -242,6 +242,60 @@ public class DocletTip {
                     
     }
     
+    public static boolean includeGrandIndex( String classFullName, String methodName ) {
+//from org.das2.qds.ops.Ops import *
+//from org.autoplot.jythonsupport.JythonOps import *
+//from org.autoplot.jythonsupport.Util import *
+//from org.das2.qds import QDataSet
+//from org.das2.qds.util.BinAverage import *
+//from org.das2.qds.util import DataSetBuilder
+//
+//_autoplot_jython_version= 2.00
+//#_autoplot_jython_version= float(getAutoplotScriptingVersion()[1:])
+//
+//from org.das2.datum import DatumRange, Units, DatumRangeUtil, TimeUtil
+//from java.net import URL, URI
+//from org.das2.datum import TimeParser
+//
+//# security concerns
+//#from java.io import File
+//#from org.das2.util.filesystem import FileSystem
+//#from org.das2.fsm import FileStorageModel
+//from org.autoplot.datasource.DataSetURI import getFile
+//from org.autoplot.datasource.DataSetURI import downloadResourceAsTempFile
+//#import java
+//#import org
+//# end, security concerns.
+//
+//# jython is tricky with single-jar releases, and using star imports to find classes doesn't work.
+//#import org.das2
+//#import org.das2.dataset
+//#import org.das2.dataset.NoDataInIntervalException
+//#import org.das2.graph        
+        
+        if ( classFullName.startsWith("org.das2.qds") ) {
+            String rest= classFullName.substring(12);
+            if ( rest.equals(".ops.Ops") ) {
+                return true;
+            } else if ( rest.equals(".util.BinAverage" ) ) {
+                return true;
+            } else if ( rest.equals(".DataSetBuilder") ) {
+                return methodName.equals("DataSetBuilder");
+            } else {
+                return false;
+            }
+        } else if ( classFullName.startsWith( "org.das2.datum" ) ) {
+            String rest= classFullName.substring(14);
+            if ( rest.equals("TimeParser") ) {
+                return true;
+            } else {
+                return false;
+            }
+        } else {
+            return false;
+        }
+    }
+    
     /**
      * 
      * @param root
@@ -380,7 +434,19 @@ public class DocletTip {
                     mdout.println("");
                     htmlout.println("");                    
                     
+                    String name= c.name();
                     
+                    if ( includeGrandIndex( fullName, c.name() ) ) {                                            
+                        if ( byAlpha ) {
+                            grandIndex.put( name, s + "_"+ currentLetter + ".md#"+name );
+                        } else {
+                            grandIndex.put( name, s + ".md#"+name );
+                        }
+                        String firstSentence= c.commentText();
+                        grandIndexFirst.put( name, firstSentence.substring(0,Math.min(60,firstSentence.length()) ) );
+                        grandIndexClass.put( name, classe.qualifiedName() );
+                        grandIndexSignature.put( name, classe.qualifiedName() + "." + name );
+                    }                    
                 }
                 
                 // loop over fields
@@ -430,6 +496,17 @@ public class DocletTip {
                     mdout.println("");
                     htmlout.println("");
 
+                    if ( includeGrandIndex( fullName, name ) ) {                                            
+                        if ( byAlpha ) {
+                            grandIndex.put( name, s + "_"+ currentLetter + ".md#"+name );
+                        } else {
+                            grandIndex.put( name, s + ".md#"+name );
+                        }
+                        String firstSentence= f.commentText();
+                        grandIndexFirst.put( name, firstSentence.substring(0,Math.min(60,firstSentence.length()) ) );
+                        grandIndexClass.put( name, classe.qualifiedName() );
+                        grandIndexSignature.put( name, classe.qualifiedName() + "." + name );
+                    }                    
                 }
                 
                 // ** loop over methods **
@@ -612,15 +689,17 @@ public class DocletTip {
                     htmlout.println("<br>");
                     htmlout.println("<br>");
                     
-                    if ( byAlpha ) {
-                        grandIndex.put( name, s + "_"+ currentLetter + ".md#"+name );
-                    } else {
-                        grandIndex.put( name, s + ".md#"+name );
+                    if ( includeGrandIndex( fullName, name ) ) {
+                        if ( byAlpha ) {
+                            grandIndex.put( name, s + "_"+ currentLetter + ".md#"+name );
+                        } else {
+                            grandIndex.put( name, s + ".md#"+name );
+                        }
+                        String firstSentence= m.commentText();
+                        grandIndexFirst.put( name, firstSentence.substring(0,Math.min(60,firstSentence.length()) ) );
+                        grandIndexClass.put( name, classe.qualifiedName() );
+                        grandIndexSignature.put( name, signature.toString() );
                     }
-                    String firstSentence= m.commentText();
-                    grandIndexFirst.put( name, firstSentence.substring(0,Math.min(60,firstSentence.length()) ) );
-                    grandIndexClass.put( name, classe.qualifiedName() );
-                    grandIndexSignature.put( name, signature.toString() );
                 }
             }catch (FileNotFoundException ex) {
                 Logger.getLogger(DocletTip.class.getName()).log(Level.SEVERE, null, ex);

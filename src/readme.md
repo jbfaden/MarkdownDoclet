@@ -50,6 +50,8 @@ spot7> javadoc \
 
 ~~~~~
 nudnik> cd /home/jbf/git/MarkdownDoclet
+nudnik> export htmldoc=/tmp/htmldoc/
+nudnik> export mddoc=/tmp/mddoc/
 nudnik> find /home/jbf/project/autoplot/autoplot-code/ -name '*.java' | grep -v temp-src \
         | grep -v temp-classes | grep -v "/test/" | grep -v  "ProGAL" | grep -v "NetCdfDataSource" | grep -v VATesting > sources.txt
 nudnuk> javadoc -docletpath dist/MarkdownDoclet.jar -doclet tips.DocletTip -sourcepath @sources.txt

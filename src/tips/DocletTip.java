@@ -31,6 +31,10 @@ import java.util.regex.Pattern;
  * To re-run the source for http://autoplot.org/wiki/index.php?title=developer.scripting&action=edit&section=68
  * you would: javadoc -docletpath /home/jbf/eg/java/javadoclet/DocletTip/dist/DocletTip.jar -doclet tips.DocletTip /home/jbf/project/autoplot/autoplot-code/QDataSet/src/org/das2/qds/ops/Ops.java
  *
+ * The environment variables can be set:
+ * export mddoc=/tmp/mddoc
+ * export htmldoc=/tmp/htmldoc
+
  * @author jbf
  */
 public class DocletTip {

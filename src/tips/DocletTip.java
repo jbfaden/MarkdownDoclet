@@ -285,27 +285,32 @@ public class DocletTip {
                 default:
                     return false;
             }
-            
-        } else if ( classFullName.startsWith( "org.autoplot.jythonsupport") ) {
-            String rest= classFullName.substring(26);
-            switch (rest) {
-                case ".JythonOps":
-                    return true;
-                case ".Util":
-                    return true;
-                default:
-                    return false;
+        } else if ( classFullName.startsWith( "org.autoplot" ) ) {
+            if ( classFullName.startsWith( "org.autoplot.jythonsupport") ) {
+                String rest= classFullName.substring(26);
+                switch (rest) {
+                    case ".JythonOps":
+                        return true;
+                    case ".Util":
+                        return true;
+                    default:
+                        return false;
+                }
+            } else if ( classFullName.startsWith( "org.autoplot.ScriptContext") ) {
+                return true;
+            } else {
+                return false;
             }
             
         } else if ( classFullName.startsWith( "org.das2.datum" ) ) {
             String rest= classFullName.substring(14);
             switch (rest) {
                 case ".TimeParser":
-                    return true;
+                    return false;
                 case ".Datum":
-                    return true;
+                    return false;
                 case ".DatumRangeUtil":
-                    return true;
+                    return false;
                 default:
                     return false;
             }

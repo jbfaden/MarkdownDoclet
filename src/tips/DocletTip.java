@@ -275,21 +275,39 @@ public class DocletTip {
         
         if ( classFullName.startsWith("org.das2.qds") ) {
             String rest= classFullName.substring(12);
-            if ( rest.equals(".ops.Ops") ) {
-                return true;
-            } else if ( rest.equals(".util.BinAverage" ) ) {
-                return true;
-            } else if ( rest.equals(".DataSetBuilder") ) {
-                return methodName.equals("DataSetBuilder");
-            } else {
-                return false;
+            switch (rest) {
+                case ".ops.Ops":
+                    return true;
+                case ".util.BinAverage":
+                    return true;
+                case ".DataSetBuilder":
+                    return methodName.equals("DataSetBuilder");
+                default:
+                    return false;
             }
+            
+        } else if ( classFullName.startsWith( "org.autoplot.jythonsupport") ) {
+            String rest= classFullName.substring(26);
+            switch (rest) {
+                case ".JythonOps":
+                    return true;
+                case ".Util":
+                    return true;
+                default:
+                    return false;
+            }
+            
         } else if ( classFullName.startsWith( "org.das2.datum" ) ) {
             String rest= classFullName.substring(14);
-            if ( rest.equals("TimeParser") ) {
-                return true;
-            } else {
-                return false;
+            switch (rest) {
+                case ".TimeParser":
+                    return true;
+                case ".Datum":
+                    return true;
+                case ".DatumRangeUtil":
+                    return true;
+                default:
+                    return false;
             }
         } else {
             return false;

@@ -659,9 +659,9 @@ public class DocletTip {
                         htmlout.println("<h3>See Also:</h3>");
                     }
                      
-                    //if ( name.equals("setLeftPanel") ) {
-                    //    System.err.println("here setLeft");
-                    //}
+                    if ( name.equals("dblarr") ) {
+                        System.err.println("here setLeft");
+                    }
                     
                     for (Tag seeTag : seeTags) {
                         SeeTag t = (SeeTag) seeTag;
@@ -673,30 +673,49 @@ public class DocletTip {
                             l = t.text();
                         }
                         
-                        if ( byAlpha && l.charAt(1)!=currentLetter ) {
-                            l= classNameNoPackage + "_" + l.charAt(1) + ".md" + l;
-                        }
+                        System.err.println("see "+l +  " " +byAlpha );
                         
                         String link= l;
                         int ii= link.indexOf("(");
                         if ( ii>-1 ) {
                             link= link.substring(0,ii);
-                        }
+                        }                        
                         
-                        int i= link.indexOf("#");
-                        if ( i>0 ) {
-                            link= link.substring(0,i) + ".md" + link.substring(i);
-                        } else if ( i==0 ) {
-                            //do nothing;
+                        if ( byAlpha ) {
+                            if ( l.startsWith("http") ) {
+                                // do nothing
+                            } else {
+                                int i= link.indexOf('#');
+                                if ( i>0 ) {
+                                    link= link.substring(0,i) + "_" + link.charAt(i+1) + ".html" + link.substring(i);                                    
+                                } else if ( i==0 ) {
+                                    link= classNameNoPackage + "_" + link.charAt(i+1) + ".html" + link.substring(i);
+                                } else {
+                                    link= link + ".html";
+                                }
+                            }
+                            
                         } else {
-                            link= link + ".md";
+
+                            if ( l.startsWith("http") ) {
+                                // do nothing
+                            } else {
+                                int i= link.indexOf("#");
+                                if ( i>0 ) {
+                                    link= link.substring(0,i) + ".html" + link.substring(i);
+                                } else if ( i==0 ) {
+                                    //do nothing;
+                                } else {
+                                    link= link + ".html";
+                                }
+                            }
                         }
                         
                         if ( t.label()==null ) {
-                            mdout.println("<a href='"+link+"'>" + seeAlsoLabel(l) +"</a><br>" );
+                            mdout.println("<a href='"+link.replaceAll("\\.html",".md")+"'>" + seeAlsoLabel(l) +"</a><br>" );
                             htmlout.println( "<a href='"+link.replaceAll("\\.md",".html")+"'>" + seeAlsoLabel(l) +"</a><br>" );
                         } else {
-                            mdout.println("<a href='"+link+"'>" + seeAlsoLabel(l) +"</a> "+t.label()+"<br>" );
+                            mdout.println("<a href='"+link.replaceAll("\\.html",".md")+"'>" + seeAlsoLabel(l) +"</a> "+t.label()+"<br>" );
                             htmlout.println("<a href='"+link.replaceAll("\\.md",".html")+"'>" + seeAlsoLabel(l) +"</a> "+t.label()+"<br>" );
                         }
                     }

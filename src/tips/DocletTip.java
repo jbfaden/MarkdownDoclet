@@ -719,13 +719,21 @@ public class DocletTip {
                             htmlout.println("<a href='"+link.replaceAll("\\.md",".html")+"'>" + seeAlsoLabel(l) +"</a> "+t.label()+"<br>" );
                         }
                     }
-                    mdout.println( String.format( "\n<a href=\"https://github.com/autoplot/dev/search?q=%s&unscoped_q=%s\">search for examples</a>", name, name ) );
-                    htmlout.println( String.format( "<br><br>\n<a href=\"https://github.com/autoplot/dev/search?q=%s&unscoped_q=%s\">search for examples</a>", name, name ) );
-                    htmlout.println( String.format( " <a href=\"https://github.com/autoplot/documentation/wiki/doc/%s\">view on GitHub</a>", loc ) );
+                    mdout.println( String.format( "\n<a href=\"https://github.com/autoplot/dev/search?q=%s&unscoped_q=%s\">[search for examples]</a>", name, name ) );
+                    htmlout.println( String.format( "<br><br>\n<a href=\"https://github.com/autoplot/dev/search?q=%s&unscoped_q=%s\">[search for examples]</a>", name, name ) );
+                    htmlout.println( String.format( " <a href=\"https://github.com/autoplot/documentation/wiki/doc/%s\">[view on GitHub]</a>", loc ) );
+                    //                                        //http://www-pw.physics.uiowa.edu/~jbf/autoplot/javadoc2018/org/autoplot/fits/FitsDataSource.html
+                    String htmlLoc;
+                    if ( byAlpha ) {
+                        htmlLoc= loc.substring(0,loc.length()-5)+".html#"+name;
+                    } else {
+                        htmlLoc= loc.substring(0,loc.length()-3)+".html#"+name;
+                    }
+                    htmlout.println( String.format( " <a href=\"http://www-pw.physics.uiowa.edu/~jbf/autoplot/javadoc2018/%s\">[view on old javadoc]</a>",htmlLoc ) );
                     int linenum= m.position().line();
                     String p= findLinkFor(s,linenum);
                     if ( p!=null ) {
-                        htmlout.println( String.format( " <a href=\"%s\">view source</a>", p ) );
+                        htmlout.println( String.format( " <a href=\"%s\">[view source]</a>", p ) );
                     }
                     mdout.println("");
                     htmlout.println("<br>");

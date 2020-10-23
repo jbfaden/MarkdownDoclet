@@ -230,7 +230,8 @@ public class DocletTip {
         
         if ( m instanceof MethodDoc ) {
             MethodDoc md= (MethodDoc)m;
-            sb.append(" ) &rarr; ").append( colloquialName(md.returnType().simpleTypeName() ) );
+            String sreturn = colloquialName(md.returnType().simpleTypeName() );
+            sb.append(" ) &rarr; ").append( sreturn );
         } else {
             if ( m.parameters().length>0 ) {
                 sb.append(" )");
@@ -559,14 +560,16 @@ public class DocletTip {
                     }               
 
                     StringBuilder signature= new StringBuilder();
-                    StringBuilder sb= new StringBuilder();
+                    StringBuilder jySignature= new StringBuilder();
                     StringBuilder ahrefBuilder= new StringBuilder();
                     
-                    signature( sb, ahrefBuilder, signature, m );
+                    signature( jySignature, ahrefBuilder, signature, m );
+                    
+                    String sb1= jySignature.toString();
                     
                     if ( haveIndicated( fullName + "." + name )!=null ) {
-                        mdout.println(sb.toString()+"<br>"); //TODO: these appear after.
-                        htmlout.println(sb.toString()+"<br>");
+                        mdout.println(sb1+"<br>"); //TODO: these appear after.
+                        htmlout.println(sb1+"<br>");
                         continue;
                     }
                     
@@ -592,8 +595,8 @@ public class DocletTip {
                         htmlout.println("<h2>"+name+"</h2>");
                     }
                     
-                    mdout.println(sb.toString());
-                    htmlout.println(sb.toString());
+                    mdout.println(sb1);
+                    htmlout.println(sb1);
                     
                     mdout.println("");
                     htmlout.println("");
@@ -619,8 +622,13 @@ public class DocletTip {
                             }
                             ParamTag pt1= pat.get(parameter.name());
                             String comment= pt1==null ? "" : pt1.parameterComment();
-                            mdout.println(""+parameter.name() + " - " + comment );
-                            htmlout.println(""+parameter.name() + " - " + comment );
+                            if ( comment.length()==0 ) {
+                                mdout.println(""+parameter.name() + " - a " + parameter.typeName() );
+                                htmlout.println(""+parameter.name() + " - a " + parameter.typeName() );
+                            } else {
+                                mdout.println(""+parameter.name() + " - " + comment );
+                                htmlout.println(""+parameter.name() + " - " + comment );
+                            }
                         }
                     }
                     
@@ -635,8 +643,8 @@ public class DocletTip {
                             mdout.println( s1.trim() );
                             htmlout.println( s1.trim() );
                         } else {
-                            mdout.println( m.returnType().toString() );
-                            htmlout.println( m.returnType().toString() );
+                            mdout.println( "a " + colloquialName( m.returnType().toString() ) );
+                            htmlout.println( "a " + colloquialName( m.returnType().toString() ) );
                             mdout.println("");
                             htmlout.println( "" );
                         }

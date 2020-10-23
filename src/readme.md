@@ -13,17 +13,24 @@ popup in Autoplot, so a simplified HTML version is created as well.
 
 # Running at Cottage Systems Headquarters or on Campus
 
+To make sources.txt file:
+
+~~~~~
+spot7> cd /home/jbf/temp/autoplot
+spot7> find * -name '*.java' -exec echo /home/jbf/temp/autoplot/{} \; > /home/jbf/ct/git/MarkdownDoclet/sources.txt 
+~~~~~
+
 Build using Netbeans, and then test like so on nudnik.physics.uiowa.edu:
 
-nudnik> javadoc -docletpath /home/jbf/git/MarkdownDoclet/dist/MarkdownDoclet.jar \
+nudnik> javadoc -docletpath /home/jbf/ct/git/MarkdownDoclet/dist/MarkdownDoclet.jar \
    -doclet tips.DocletTip \
    /home/jbf/project/autoplot/autoplot-code/QDataSet/src/org/das2/qds/ops/Ops.java
 
 And to debug from Netbeans:
 ~~~~~
-spot7> cd /home/jbf/git/MarkdownDoclet/ 
+spot7> cd /home/jbf/ct/git/MarkdownDoclet/ 
 spot7> javadoc -J-Xrunjdwp:server=y,transport=dt_socket,address=12345,suspend=y \
-   -docletpath /home/jbf/git/MarkdownDoclet/dist/MarkdownDoclet.jar \
+   -docletpath /home/jbf/ct/git/MarkdownDoclet/dist/MarkdownDoclet.jar \
    -doclet tips.DocletTip \
    @sources.txt
 ~~~~~

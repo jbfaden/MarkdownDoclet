@@ -130,7 +130,7 @@ public class DocletTip {
      * @return 
      * //TODO: I have a nice Map class somewhere that does hierarchical lookup on IP, which could be used here. 
      */
-    private static String findLinkFor( String s, int linenum ) {
+    private static String findLinkForSource( String s, int linenum ) {
         int i= s.lastIndexOf("/");
         String sline="#l"+linenum;
         if ( s.startsWith("org/autoplot/datasource") ) {
@@ -317,6 +317,53 @@ public class DocletTip {
             }
         } else {
             return false;
+        }
+    }
+    
+    /**
+     * "org.das2.qds.examples.Schemes#boundingBox"
+     * "http://www-pw.physics.uiowa.edu/~jbf/autoplot/doc/org/das2/qds/examples/Schemes.html#boundingBox"
+     * 
+     * "Schemes#boundingBox"
+     * "Schemes.html#boundingBox"
+     * @param clas
+     * @return 
+     */
+    public static String getHtmlLinkFor( String clas ) {
+        if ( clas.startsWith("http") ) {
+            return clas;
+        }
+        String postHash= null;
+        int ihash= clas.indexOf("#");
+        if ( ihash>-1 ) {
+            postHash= clas.substring(ihash);
+            clas= clas.substring(0,ihash);
+        } 
+        String[] ss= clas.split("\\.",-2);
+        if ( ss.length==1 ) {
+            return ss[0]+".html" + ( postHash!=null ? postHash : "" );
+        } else {
+            String base= "http://www-pw.physics.uiowa.edu/~jbf/autoplot/doc/";
+            return base + String.join( "/", ss ) + ".html" + ( postHash!=null ? postHash : "" );
+        }
+    }
+    
+    public static String getMDLinkFor( String clas ) {
+        if ( clas.startsWith("http") ) {
+            return clas;
+        }
+        String postHash= null;
+        int ihash= clas.indexOf("#");
+        if ( ihash>-1 ) {
+            postHash= clas.substring(ihash);
+            clas= clas.substring(0,ihash);
+        } 
+        String[] ss= clas.split("\\.",-2);
+        if ( ss.length==1 ) {
+            return ss[0]+".md" + ( postHash!=null ? postHash : "" );
+        } else {
+            String base= "https://git.uiowa.edu/jbf/autoplot/-/blob/master/doc/";
+            return base + String.join( "/", ss ) + ".md" + ( postHash!=null ? postHash : "" );
         }
     }
     
@@ -677,6 +724,10 @@ public class DocletTip {
                             l = t.text();
                         }
                         
+                        if ( l.contains("Schemes") ) {
+                            System.err.println("herestop");
+                        }
+                        
                         System.err.println("see "+l +  " " +byAlpha );
                         
                         String link= l;
@@ -691,11 +742,9 @@ public class DocletTip {
                             } else {
                                 int i= link.indexOf('#');
                                 if ( i>0 ) {
-                                    link= link.substring(0,i) + "_" + link.charAt(i+1) + ".html" + link.substring(i);                                    
+                                    link= link.substring(0,i) + "_" + link.charAt(i+1) + link.substring(i);                                    
                                 } else if ( i==0 ) {
-                                    link= classNameNoPackage + "_" + link.charAt(i+1) + ".html" + link.substring(i);
-                                } else {
-                                    link= link + ".html";
+                                    link= classNameNoPackage + "_" + link.charAt(i+1) + link.substring(i);
                                 }
                             }
                             
@@ -706,21 +755,19 @@ public class DocletTip {
                             } else {
                                 int i= link.indexOf("#");
                                 if ( i>0 ) {
-                                    link= link.substring(0,i) + ".html" + link.substring(i);
+                                    link= link.substring(0,i) + link.substring(i);
                                 } else if ( i==0 ) {
                                     //do nothing;
-                                } else {
-                                    link= link + ".html";
-                                }
+                                } 
                             }
                         }
                         
                         if ( t.label()==null ) {
-                            mdout.println("<a href='"+link.replaceAll("\\.html",".md")+"'>" + seeAlsoLabel(l) +"</a><br>" );
-                            htmlout.println( "<a href='"+link.replaceAll("\\.md",".html")+"'>" + seeAlsoLabel(l) +"</a><br>" );
+                            mdout.println("<a href='"+ getMDLinkFor( link )+"'>" + seeAlsoLabel(l) +"</a><br>" );
+                            htmlout.println( "<a href='"+getHtmlLinkFor(link)+"'>" + seeAlsoLabel(l) +"</a><br>" );
                         } else {
-                            mdout.println("<a href='"+link.replaceAll("\\.html",".md")+"'>" + seeAlsoLabel(l) +"</a> "+t.label()+"<br>" );
-                            htmlout.println("<a href='"+link.replaceAll("\\.md",".html")+"'>" + seeAlsoLabel(l) +"</a> "+t.label()+"<br>" );
+                            mdout.println("<a href='"+getMDLinkFor(link)+"'>" + seeAlsoLabel(l) +"</a> "+t.label()+"<br>" );
+                            htmlout.println("<a href='"+getHtmlLinkFor(link)+"'>" + seeAlsoLabel(l) +"</a> "+t.label()+"<br>" );
                         }
                     }
                     mdout.println( String.format( "\n<a href=\"https://github.com/autoplot/dev/search?q=%s&unscoped_q=%s\">[search for examples]</a>", name, name ) );
@@ -735,7 +782,7 @@ public class DocletTip {
                     }
                     htmlout.println( String.format( " <a href=\"http://www-pw.physics.uiowa.edu/~jbf/autoplot/javadoc2018/%s\">[view on old javadoc]</a>",htmlLoc ) );
                     int linenum= m.position().line();
-                    String p= findLinkFor(s,linenum);
+                    String p= findLinkForSource(s,linenum);
                     if ( p!=null ) {
                         htmlout.println( String.format( " <a href=\"%s\">[view source]</a>", p ) );
                     }

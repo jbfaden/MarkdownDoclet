@@ -27,8 +27,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
+ * Doclet which creats both simplified HTML version and MarkDown version.
  * From https://www.zdnet.com/article/customize-javadoc-output-with-doclets/
- * To re-run the source for http://autoplot.org/wiki/index.php?title=developer.scripting&action=edit&section=68
+ * To re-run the source for http://autoplot.org/wiki/index.php?title=developer.scripting&amp;action=edit&amp;section=68
  * you would: javadoc -docletpath /home/jbf/eg/java/javadoclet/DocletTip/dist/DocletTip.jar -doclet tips.DocletTip /home/jbf/project/autoplot/autoplot-code/QDataSet/src/org/das2/qds/ops/Ops.java
  *
  * The environment variables can be set:
@@ -244,10 +245,10 @@ public class DocletTip {
     }
     
     /**
-     * return true if it should be in the grand index.
-     * @param classFullName
-     * @param methodName
-     * @return 
+     * return true if the method should be in the grand index.
+     * @param classFullName class name, like org.das2.qds.ops.Ops
+     * @param methodName name of the method, like DataSetBuilder
+     * @return true if the method should be in the grand index.
      */
     public static boolean includeGrandIndex( String classFullName, String methodName ) {
 //from org.das2.qds.ops.Ops import *
@@ -327,13 +328,15 @@ public class DocletTip {
     }
     
     /**
+     * Create a link to the known location of the JavaDoc.  This should
+     * be externally configurable, but presently it is hard-coded here.
      * "org.das2.qds.examples.Schemes#boundingBox"
      * "http://www-pw.physics.uiowa.edu/~jbf/autoplot/doc/org/das2/qds/examples/Schemes.html#boundingBox"
      * 
      * "Schemes#boundingBox"
      * "Schemes.html#boundingBox"
-     * @param clas
-     * @return 
+     * @param clas the class name, like org.das2.qds.examples.Schemes
+     * @return the html code containing the link.
      */
     public static String getHtmlLinkFor( String clas ) {
         if ( clas.startsWith("http") ) {
@@ -354,6 +357,18 @@ public class DocletTip {
         }
     }
     
+    /**
+     * Create a link to the known location of the MarkDown version of the
+     * JavaDoc.  This should be externally configurable, but presently it is 
+     * hard-coded here.
+     * "org.das2.qds.examples.Schemes#boundingBox"
+     * "https://git.uiowa.edu/jbf/autoplot/-/blob/master/doc/org/das2/qds/examples/Schemes.md#boundingBox"
+     * 
+     * "Schemes#boundingBox"
+     * "Schemes.html#boundingBox"
+     * @param clas the class name, like org.das2.qds.examples.Schemes
+     * @return the html code containing the link.
+     */    
     public static String getMDLinkFor( String clas ) {
         if ( clas.startsWith("http") ) {
             return clas;
@@ -876,8 +891,8 @@ public class DocletTip {
     
     /**
      * 
-     * @param root
-     * @return 
+     * @param root the root which is set at the command line.
+     * @return true if things worked.
      */
      public static boolean start(RootDoc root) {
          return new DocletTip().doStart(root);

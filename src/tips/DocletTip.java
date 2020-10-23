@@ -367,19 +367,21 @@ public class DocletTip {
         }
     }
     
-    /**
-     * 
-     * @param root
-     * @return 
-     */
-     public static boolean start(RootDoc root) {
-         
-        String sdoc;
+    Map<String,String> grandIndex= new HashMap<>();
+    Map<String,String> grandIndexFirst= new HashMap<>();
+    Map<String,String> grandIndexClass= new HashMap<>();
+    Map<String,String> grandIndexSignature= new HashMap<>();
+        
+    String sdoc;
+    {
         sdoc= System.getenv("mddoc"); 
         if ( sdoc!=null )  mddoc= new File( sdoc );
         
         sdoc= System.getenv("htmldoc");
         if ( sdoc!=null ) htmldoc= new File( sdoc );
+    }
+    
+    public boolean doStart( RootDoc root ) {
             
         ClassDoc[] classes = root.classes();
 
@@ -390,11 +392,6 @@ public class DocletTip {
         if ( !htmldoc.exists() ) {
             if ( !htmldoc.mkdirs() ) throw new IllegalStateException("can't make dir: "+htmldoc);
         }
-        
-        Map<String,String> grandIndex= new HashMap<>();
-        Map<String,String> grandIndexFirst= new HashMap<>();
-        Map<String,String> grandIndexClass= new HashMap<>();
-        Map<String,String> grandIndexSignature= new HashMap<>();
         
         boolean seePlotElement= false;
         
@@ -870,5 +867,15 @@ public class DocletTip {
         System.err.println("****");
         
         return true;
+        
     }
+    
+    /**
+     * 
+     * @param root
+     * @return 
+     */
+     public static boolean start(RootDoc root) {
+         return new DocletTip().doStart(root);
+     }
 } 

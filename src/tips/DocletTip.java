@@ -243,6 +243,12 @@ public class DocletTip {
                     
     }
     
+    /**
+     * return true if it should be in the grand index.
+     * @param classFullName
+     * @param methodName
+     * @return 
+     */
     public static boolean includeGrandIndex( String classFullName, String methodName ) {
 //from org.das2.qds.ops.Ops import *
 //from org.autoplot.jythonsupport.JythonOps import *
@@ -485,36 +491,8 @@ public class DocletTip {
                 ConstructorDoc[] constructors= classe.constructors();
                 for ( int j=0; j<constructors.length; j++ ) {
                     ConstructorDoc c= constructors[j];
-                    if ( !c.isPublic() ) continue;
-                                               
-                    StringBuilder signature= new StringBuilder();
-                    StringBuilder sb= new StringBuilder();
-                    StringBuilder ahrefBuilder= new StringBuilder();
-                    
-                    signature( sb, ahrefBuilder, signature, c);
-                    
-                    mdout.println( sb.toString() );
-                    htmlout.println("<h2>"+sb.toString() +"</h2>");
-                    
-                    mdout.println(c.commentText());
-                    htmlout.println("<p>"+c.commentText()+"</p>");
-                    
-                    mdout.println("");
-                    htmlout.println("");                    
-                    
-                    String name= c.name();
-                    
-                    if ( includeGrandIndex( fullName, c.name() ) ) {                                            
-                        if ( byAlpha ) {
-                            grandIndex.put( name, s + "_"+ currentLetter + ".md#"+name );
-                        } else {
-                            grandIndex.put( name, s + ".md#"+name );
-                        }
-                        String firstSentence= c.commentText();
-                        grandIndexFirst.put( name, firstSentence.substring(0,Math.min(60,firstSentence.length()) ) );
-                        grandIndexClass.put( name, classe.qualifiedName() );
-                        grandIndexSignature.put( name, classe.qualifiedName() + "." + name );
-                    }                    
+                    if ( !c.isPublic() ) continue;                                               
+                    doOneConstructor(c, mdout, htmlout, fullName, byAlpha, s, currentLetter, classe);
                 }
                 
                 // loop over fields
@@ -524,57 +502,8 @@ public class DocletTip {
 
                 for (int j = 0; j < Math.min( 20000, nfields ); j++) {
                     FieldDoc f= fields[j];
-                    
                     if ( !f.isPublic() ) continue;
-                    
-                    String name= f.name();
-                    
-                    if ( seePlotElement ) {
-                        seePlotElement= false; // breakpoint here for debugging.      
-                    }
-                                        
-                    StringBuilder sb= new StringBuilder();
-                    StringBuilder ahrefBuilder= new StringBuilder();
-
-                    ahrefBuilder.append("field: ").append(name);
-                    
-                    // <a name='accum(org.das2.qds.QDataSet,org.das2.qds.QDataSet)'></a> // note not standard JavaDoc.
-                    if ( haveIndicated(ahrefBuilder.toString())!=null ) {
-                        mdout.println("<a name=\""+ahrefBuilder.toString()+"\"></a>");
-                        htmlout.println("<a name=\""+ahrefBuilder.toString().replaceAll("\\.md",".html")+"\"></a>");
-                        continue;
-                    } else {
-                        indicated.put( ahrefBuilder.toString(), ahrefBuilder.toString() );
-                    }
-                    mdout.println("***");
-                    htmlout.println("<hr>");
-                    mdout.println("<a name=\""+ahrefBuilder.toString()+"\"></a>");
-                    htmlout.println("<a name=\""+ahrefBuilder.toString()+"\"></a>");
-                    mdout.println("# "+name);
-                    htmlout.println("<h2>"+name+"</h2>");
-                    
-                    mdout.println(sb.toString());
-                    htmlout.println(sb.toString());
-                    
-                    mdout.println("");
-                    htmlout.println("");
-                    mdout.println(f.commentText());
-                    htmlout.println("<p>"+f.commentText()+"</p>");
-                    
-                    mdout.println("");
-                    htmlout.println("");
-
-                    if ( includeGrandIndex( fullName, name ) ) {                                            
-                        if ( byAlpha ) {
-                            grandIndex.put( name, s + "_"+ currentLetter + ".md#"+name );
-                        } else {
-                            grandIndex.put( name, s + ".md#"+name );
-                        }
-                        String firstSentence= f.commentText();
-                        grandIndexFirst.put( name, firstSentence.substring(0,Math.min(60,firstSentence.length()) ) );
-                        grandIndexClass.put( name, classe.qualifiedName() );
-                        grandIndexSignature.put( name, classe.qualifiedName() + "." + name );
-                    }                    
+                    doOneField(f, seePlotElement, mdout, htmlout, fullName, byAlpha, s, currentLetter, classe);
                 }
                 
                 // ** loop over methods **
@@ -713,60 +642,9 @@ public class DocletTip {
                     
                     for (Tag seeTag : seeTags) {
                         SeeTag t = (SeeTag) seeTag;
-                        int it= t.text().indexOf(')');
-                        String l;
-                        if ( it>-1 ) {
-                            l = t.text().substring(0,it+1);
-                        } else {
-                            l = t.text();
-                        }
-                        
-                        if ( l.contains("Schemes") ) {
-                            System.err.println("herestop");
-                        }
-                        
-                        System.err.println("see "+l +  " " +byAlpha );
-                        
-                        String link= l;
-                        int ii= link.indexOf("(");
-                        if ( ii>-1 ) {
-                            link= link.substring(0,ii);
-                        }                        
-                        
-                        if ( byAlpha ) {
-                            if ( l.startsWith("http") ) {
-                                // do nothing
-                            } else {
-                                int i= link.indexOf('#');
-                                if ( i>0 ) {
-                                    link= link.substring(0,i) + "_" + link.charAt(i+1) + link.substring(i);                                    
-                                } else if ( i==0 ) {
-                                    link= classNameNoPackage + "_" + link.charAt(i+1) + link.substring(i);
-                                }
-                            }
-                            
-                        } else {
-
-                            if ( l.startsWith("http") ) {
-                                // do nothing
-                            } else {
-                                int i= link.indexOf("#");
-                                if ( i>0 ) {
-                                    link= link.substring(0,i) + link.substring(i);
-                                } else if ( i==0 ) {
-                                    //do nothing;
-                                } 
-                            }
-                        }
-                        
-                        if ( t.label()==null ) {
-                            mdout.println("<a href='"+ getMDLinkFor( link )+"'>" + seeAlsoLabel(l) +"</a><br>" );
-                            htmlout.println( "<a href='"+getHtmlLinkFor(link)+"'>" + seeAlsoLabel(l) +"</a><br>" );
-                        } else {
-                            mdout.println("<a href='"+getMDLinkFor(link)+"'>" + seeAlsoLabel(l) +"</a> "+t.label()+"<br>" );
-                            htmlout.println("<a href='"+getHtmlLinkFor(link)+"'>" + seeAlsoLabel(l) +"</a> "+t.label()+"<br>" );
-                        }
+                        doOneSeeTag(t, byAlpha, classNameNoPackage, mdout, htmlout);
                     }
+                    
                     mdout.println( String.format( "\n<a href=\"https://github.com/autoplot/dev/search?q=%s&unscoped_q=%s\">[search for examples]</a>", name, name ) );
                     htmlout.println( String.format( "<br><br>\n<a href=\"https://github.com/autoplot/dev/search?q=%s&unscoped_q=%s\">[search for examples]</a>", name, name ) );
                     htmlout.println( String.format( " <a href=\"https://github.com/autoplot/documentation/wiki/doc/%s\">[view on GitHub]</a>", loc ) );
@@ -868,6 +746,137 @@ public class DocletTip {
         
         return true;
         
+    }
+
+    private void doOneSeeTag(SeeTag t, boolean byAlpha, String classNameNoPackage, PrintStream mdout, PrintStream htmlout) {
+        int it= t.text().indexOf(')');
+        String l;
+        if ( it>-1 ) {
+            l = t.text().substring(0,it+1);
+        } else {
+            l = t.text();
+        }
+        
+        if ( l.contains("Schemes") ) {
+            System.err.println("herestop");
+        }
+        
+        System.err.println("see "+l +  " " +byAlpha );
+        
+        String link= l;
+        int ii= link.indexOf("(");
+        if ( ii>-1 ) {
+            link= link.substring(0,ii);
+        }
+        
+        if ( byAlpha ) {
+            if ( l.startsWith("http") ) {
+                // do nothing
+            } else {
+                int i= link.indexOf('#');
+                if ( i>0 ) {
+                    link= link.substring(0,i) + "_" + link.charAt(i+1) + link.substring(i);
+                } else if ( i==0 ) {
+                    link= classNameNoPackage + "_" + link.charAt(i+1) + link.substring(i);
+                }
+            }
+            
+        } else {
+            
+            if ( l.startsWith("http") ) {
+                // do nothing
+            } else {
+                int i= link.indexOf("#");
+                if ( i>0 ) {
+                    link= link.substring(0,i) + link.substring(i);
+                } else if ( i==0 ) {
+                    //do nothing;
+                }
+            }
+        }
+        
+        if ( t.label()==null ) {
+            mdout.println("<a href='"+ getMDLinkFor( link )+"'>" + seeAlsoLabel(l) +"</a><br>" );
+            htmlout.println( "<a href='"+getHtmlLinkFor(link)+"'>" + seeAlsoLabel(l) +"</a><br>" );
+        } else {
+            mdout.println("<a href='"+getMDLinkFor(link)+"'>" + seeAlsoLabel(l) +"</a> "+t.label()+"<br>" );
+            htmlout.println("<a href='"+getHtmlLinkFor(link)+"'>" + seeAlsoLabel(l) +"</a> "+t.label()+"<br>" );
+        }
+    }
+
+    private boolean doOneField(FieldDoc f, boolean seePlotElement, PrintStream mdout, PrintStream htmlout, String fullName, boolean byAlpha, String s, char currentLetter, ClassDoc classe) {
+        String name= f.name();
+        if ( seePlotElement ) {
+            seePlotElement= false; // breakpoint here for debugging.
+        }
+        StringBuilder sb= new StringBuilder();
+        StringBuilder ahrefBuilder= new StringBuilder();
+        ahrefBuilder.append("field: ").append(name);
+        // <a name='accum(org.das2.qds.QDataSet,org.das2.qds.QDataSet)'></a> // note not standard JavaDoc.
+        if (haveIndicated(ahrefBuilder.toString())!=null) {
+            mdout.println("<a name=\""+ahrefBuilder.toString()+"\"></a>");
+            htmlout.println("<a name=\""+ahrefBuilder.toString().replaceAll("\\.md",".html")+"\"></a>");
+            return true;
+        } else {
+            indicated.put( ahrefBuilder.toString(), ahrefBuilder.toString() );
+        }
+        mdout.println("***");
+        htmlout.println("<hr>");
+        mdout.println("<a name=\""+ahrefBuilder.toString()+"\"></a>");
+        htmlout.println("<a name=\""+ahrefBuilder.toString()+"\"></a>");
+        mdout.println("# "+name);
+        htmlout.println("<h2>"+name+"</h2>");
+        mdout.println(sb.toString());
+        htmlout.println(sb.toString());
+        mdout.println("");
+        htmlout.println("");
+        mdout.println(f.commentText());
+        htmlout.println("<p>"+f.commentText()+"</p>");
+        mdout.println("");
+        htmlout.println("");
+        if ( includeGrandIndex( fullName, name ) ) {
+            if ( byAlpha ) {
+                grandIndex.put( name, s + "_"+ currentLetter + ".md#"+name );
+            } else {
+                grandIndex.put( name, s + ".md#"+name );
+            }
+            String firstSentence= f.commentText();
+            grandIndexFirst.put( name, firstSentence.substring(0,Math.min(60,firstSentence.length()) ) );
+            grandIndexClass.put( name, classe.qualifiedName() );
+            grandIndexSignature.put( name, classe.qualifiedName() + "." + name );
+        }
+        return false;
+    }
+
+    private void doOneConstructor(ConstructorDoc c, PrintStream mdout, PrintStream htmlout, String fullName, boolean byAlpha, String s, char currentLetter, ClassDoc classe) {
+        StringBuilder signature= new StringBuilder();
+        StringBuilder sb= new StringBuilder();
+        StringBuilder ahrefBuilder= new StringBuilder();
+        
+        signature( sb, ahrefBuilder, signature, c);
+        
+        mdout.println( sb.toString() );
+        htmlout.println("<h2>"+sb.toString() +"</h2>");
+        
+        mdout.println(c.commentText());
+        htmlout.println("<p>"+c.commentText()+"</p>");
+        
+        mdout.println("");
+        htmlout.println("");
+        
+        String name= c.name();
+        
+        if ( includeGrandIndex( fullName, c.name() ) ) {
+            if ( byAlpha ) {
+                grandIndex.put( name, s + "_"+ currentLetter + ".md#"+name );
+            } else {
+                grandIndex.put( name, s + ".md#"+name );
+            }
+            String firstSentence= c.commentText();
+            grandIndexFirst.put( name, firstSentence.substring(0,Math.min(60,firstSentence.length()) ) );
+            grandIndexClass.put( name, classe.qualifiedName() );
+            grandIndexSignature.put( name, classe.qualifiedName() + "." + name );
+        }
     }
     
     /**

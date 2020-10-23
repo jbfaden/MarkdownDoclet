@@ -548,102 +548,7 @@ public class DocletTip {
                     
                     indicated.put( fullName + "." + name, ahrefBuilder.toString() );
                     
-                    mdout.println("***");
-                    htmlout.println("<hr>");
-                    mdout.println("<a name=\""+ahrefBuilder.toString()+"\"></a>");
-                    htmlout.println("<a name=\""+ahrefBuilder.toString()+"\"></a>");
-                    
-                    
-                    Tag[] deprecatedTags= m.tags("deprecated");
-                    boolean isDeprecated=  deprecatedTags.length>0 ;
-                    
-                    if ( isDeprecated ) {
-                        mdout.println("# <del>"+name + "</del>");
-                        mdout.println("Deprecated: " + deprecatedTags[0].text());
-                        htmlout.println("<h2><del>"+name+"</del></h2>");
-                        htmlout.println("Deprecated: " + deprecatedTags[0].text());
-                        continue;
-                    } else {
-                        mdout.println("# "+name);
-                        htmlout.println("<h2>"+name+"</h2>");
-                    }
-                    
-                    mdout.println(sb1);
-                    htmlout.println(sb1);
-                    
-                    mdout.println("");
-                    htmlout.println("");
-                    
-                    String comments= handleText(m.commentText());
-                    mdout.println(comments);
-                    htmlout.println("<p>"+comments+"</p>");
-                    
-                    if ( m.parameters().length>0 ) {
-                        Map<String,ParamTag> pat= new HashMap<>();
-                        for ( ParamTag pt: m.paramTags() ) {
-                            pat.put( pt.parameterName(), pt );
-                        }
-                        mdout.println("");
-                        htmlout.println("");
-                        mdout.println("### Parameters:" );
-                        htmlout.println("<h3>Parameters</h3>" );
-                        for ( int k=0; k<m.parameters().length; k++ ) {
-                            Parameter parameter= m.parameters()[k];
-                            if ( k>0 ) {
-                                mdout.print("<br>");
-                                htmlout.println("<br>");
-                            }
-                            ParamTag pt1= pat.get(parameter.name());
-                            String comment= pt1==null ? "" : pt1.parameterComment();
-                            if ( comment.length()==0 ) {
-                                mdout.println(""+parameter.name() + " - a " + parameter.typeName() );
-                                htmlout.println(""+parameter.name() + " - a " + parameter.typeName() );
-                            } else {
-                                mdout.println(""+parameter.name() + " - " + comment );
-                                htmlout.println(""+parameter.name() + " - " + comment );
-                            }
-                        }
-                    }
-                    
-                    mdout.println("");
-                    htmlout.println("");
-                    mdout.println("### Returns:" );
-                    htmlout.println("<h3>Returns:</h3>" );
-                    Tag[] tags= m.tags("return");
-                    if ( tags.length>0 ) {
-                        String s1= tags[0].text();
-                        if ( s1.trim().length()>0 ) {
-                            mdout.println( s1.trim() );
-                            htmlout.println( s1.trim() );
-                        } else {
-                            mdout.println( "a " + colloquialName( m.returnType().toString() ) );
-                            htmlout.println( "a " + colloquialName( m.returnType().toString() ) );
-                            mdout.println("");
-                            htmlout.println( "" );
-                        }
-                    } else {
-                        String s1= m.returnType().toString();
-                        if ( s1.equals("void") ) {
-                            mdout.println( "void (returns nothing)" );
-                            htmlout.println( "void (returns nothing)" );
-                        } else {
-                            mdout.println( s1 );
-                            htmlout.println( s1 );
-                        }
-                        mdout.println("");
-                        htmlout.println("");
-                    }
-                    
-                    Tag[] seeTags= m.tags("see");
-                    if ( seeTags.length>0 ) {
-                        mdout.println("### See Also:");
-                        htmlout.println("<h3>See Also:</h3>");
-                    }
-                    
-                    for (Tag seeTag : seeTags) {
-                        SeeTag t = (SeeTag) seeTag;
-                        doOneSeeTag(t, byAlpha, classNameNoPackage, mdout, htmlout);
-                    }
+                    if ( doOneMethod(mdout, htmlout, ahrefBuilder, m, name, sb1, byAlpha, classNameNoPackage) ) continue;
                     
                     mdout.println( String.format( "\n<a href=\"https://github.com/autoplot/dev/search?q=%s&unscoped_q=%s\">[search for examples]</a>", name, name ) );
                     htmlout.println( String.format( "<br><br>\n<a href=\"https://github.com/autoplot/dev/search?q=%s&unscoped_q=%s\">[search for examples]</a>", name, name ) );
@@ -746,6 +651,96 @@ public class DocletTip {
         
         return true;
         
+    }
+
+    private boolean doOneMethod(PrintStream mdout, PrintStream htmlout, StringBuilder ahrefBuilder, MethodDoc m, String name, String sb1, boolean byAlpha, String classNameNoPackage) {
+        mdout.println("***");
+        htmlout.println("<hr>");
+        mdout.println("<a name=\""+ahrefBuilder.toString()+"\"></a>");
+        htmlout.println("<a name=\""+ahrefBuilder.toString()+"\"></a>");
+        Tag[] deprecatedTags= m.tags("deprecated");
+        boolean isDeprecated=  deprecatedTags.length>0 ;
+        if (isDeprecated) {
+            mdout.println("# <del>"+name + "</del>");
+            mdout.println("Deprecated: " + deprecatedTags[0].text());
+            htmlout.println("<h2><del>"+name+"</del></h2>");
+            htmlout.println("Deprecated: " + deprecatedTags[0].text());
+            return true;
+        } else {
+            mdout.println("# "+name);
+            htmlout.println("<h2>"+name+"</h2>");
+        }
+        mdout.println(sb1);
+        htmlout.println(sb1);
+        mdout.println("");
+        htmlout.println("");
+        String comments= handleText(m.commentText());
+        mdout.println(comments);
+        htmlout.println("<p>"+comments+"</p>");
+        if ( m.parameters().length>0 ) {
+            Map<String,ParamTag> pat= new HashMap<>();
+            for ( ParamTag pt: m.paramTags() ) {
+                pat.put( pt.parameterName(), pt );
+            }
+            mdout.println("");
+            htmlout.println("");
+            mdout.println("### Parameters:" );
+            htmlout.println("<h3>Parameters</h3>" );
+            for ( int k=0; k<m.parameters().length; k++ ) {
+                Parameter parameter= m.parameters()[k];
+                if ( k>0 ) {
+                    mdout.print("<br>");
+                    htmlout.println("<br>");
+                }
+                ParamTag pt1= pat.get(parameter.name());
+                String comment= pt1==null ? "" : pt1.parameterComment();
+                if ( comment.length()==0 ) {
+                    mdout.println(""+parameter.name() + " - a " + parameter.typeName() );
+                    htmlout.println(""+parameter.name() + " - a " + parameter.typeName() );
+                } else {
+                    mdout.println(""+parameter.name() + " - " + comment );
+                    htmlout.println(""+parameter.name() + " - " + comment );
+                }
+            }
+        }
+        mdout.println("");
+        htmlout.println("");
+        mdout.println("### Returns:" );
+        htmlout.println("<h3>Returns:</h3>" );
+        Tag[] tags= m.tags("return");
+        if ( tags.length>0 ) {
+            String s1= tags[0].text();
+            if ( s1.trim().length()>0 ) {
+                mdout.println( s1.trim() );
+                htmlout.println( s1.trim() );
+            } else {
+                mdout.println( "a " + colloquialName( m.returnType().toString() ) );
+                htmlout.println( "a " + colloquialName( m.returnType().toString() ) );
+                mdout.println("");
+                htmlout.println( "" );
+            }
+        } else {
+            String s1= m.returnType().toString();
+            if ( s1.equals("void") ) {
+                mdout.println( "void (returns nothing)" );
+                htmlout.println( "void (returns nothing)" );
+            } else {
+                mdout.println( s1 );
+                htmlout.println( s1 );
+            }
+            mdout.println("");
+            htmlout.println("");
+        }
+        Tag[] seeTags= m.tags("see");
+        if ( seeTags.length>0 ) {
+            mdout.println("### See Also:");
+            htmlout.println("<h3>See Also:</h3>");
+        }
+        for (Tag seeTag : seeTags) {
+            SeeTag t = (SeeTag) seeTag;
+            doOneSeeTag(t, byAlpha, classNameNoPackage, mdout, htmlout);
+        }
+        return false;
     }
 
     private void doOneSeeTag(SeeTag t, boolean byAlpha, String classNameNoPackage, PrintStream mdout, PrintStream htmlout) {

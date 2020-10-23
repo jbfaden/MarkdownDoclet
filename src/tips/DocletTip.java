@@ -658,10 +658,6 @@ public class DocletTip {
                         mdout.println("### See Also:");
                         htmlout.println("<h3>See Also:</h3>");
                     }
-                     
-                    if ( name.equals("dblarr") ) {
-                        System.err.println("here setLeft");
-                    }
                     
                     for (Tag seeTag : seeTags) {
                         SeeTag t = (SeeTag) seeTag;
@@ -722,6 +718,7 @@ public class DocletTip {
                     mdout.println( String.format( "\n<a href=\"https://github.com/autoplot/dev/search?q=%s&unscoped_q=%s\">search for examples</a>", name, name ) );
                     htmlout.println( String.format( "<br><br>\n<a href=\"https://github.com/autoplot/dev/search?q=%s&unscoped_q=%s\">search for examples</a>", name, name ) );
                     htmlout.println( String.format( " <a href=\"https://github.com/autoplot/documentation/wiki/doc/%s\">view on GitHub</a>", loc ) );
+                    htmlout.println( String.format( " <a href=\"http://www-pw.physics.uiowa.edu/~jbf/autoplot/javadoc2018/%s\">view on old javadoc</a>", loc ) );
                     int linenum= m.position().line();
                     String p= findLinkFor(s,linenum);
                     if ( p!=null ) {

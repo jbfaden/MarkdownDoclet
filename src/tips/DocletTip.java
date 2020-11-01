@@ -414,7 +414,7 @@ public class DocletTip {
             if ( !htmldoc.mkdirs() ) throw new IllegalStateException("can't make dir: "+htmldoc);
         }
         
-        boolean seePlotElement= false;
+        //boolean seePlotElement= false;
         
         for (ClassDoc classe : classes) {
             
@@ -436,9 +436,9 @@ public class DocletTip {
             PrintStream htmlout= null;
             try {
                 String s = classe.qualifiedName();
-                if ( s.endsWith("PlotElement") ) {
-                    seePlotElement= true;
-                }
+                //if ( s.endsWith("QDataSet") ) {
+                //    seePlotElement= true;
+                //}
                     
                 int is= 0;
                 for ( int j=0; j<s.length(); j++ ) {
@@ -518,7 +518,7 @@ public class DocletTip {
                 for (int j = 0; j < Math.min( 20000, nfields ); j++) {
                     FieldDoc f= fields[j];
                     if ( !f.isPublic() ) continue;
-                    doOneField(f, seePlotElement, mdout, htmlout, fullName, byAlpha, s, currentLetter, classe);
+                    doOneField(f, mdout, htmlout, fullName, byAlpha, s, currentLetter, classe);
                 }
                 
                 // ** loop over methods **
@@ -814,32 +814,21 @@ public class DocletTip {
         }
     }
 
-    private boolean doOneField(FieldDoc f, boolean seePlotElement, PrintStream mdout, PrintStream htmlout, String fullName, boolean byAlpha, String s, char currentLetter, ClassDoc classe) {
+    private boolean doOneField(FieldDoc f, PrintStream mdout, PrintStream htmlout, String fullName, boolean byAlpha, String s, char currentLetter, ClassDoc classe) {
         String name= f.name();
-        if ( seePlotElement ) {
-            seePlotElement= false; // breakpoint here for debugging.
-        }
-        StringBuilder sb= new StringBuilder();
+
         StringBuilder ahrefBuilder= new StringBuilder();
-        ahrefBuilder.append("field: ").append(name);
         // <a name='accum(org.das2.qds.QDataSet,org.das2.qds.QDataSet)'></a> // note not standard JavaDoc.
-        if (haveIndicated(ahrefBuilder.toString())!=null) {
-            mdout.println("<a name=\""+ahrefBuilder.toString()+"\"></a>");
-            htmlout.println("<a name=\""+ahrefBuilder.toString().replaceAll("\\.md",".html")+"\"></a>");
-            return true;
-        } else {
-            indicated.put( ahrefBuilder.toString(), ahrefBuilder.toString() );
-        }
+
+        ahrefBuilder.append(name);
+
         mdout.println("***");
         htmlout.println("<hr>");
         mdout.println("<a name=\""+ahrefBuilder.toString()+"\"></a>");
         htmlout.println("<a name=\""+ahrefBuilder.toString()+"\"></a>");
         mdout.println("# "+name);
         htmlout.println("<h2>"+name+"</h2>");
-        mdout.println(sb.toString());
-        htmlout.println(sb.toString());
         mdout.println("");
-        htmlout.println("");
         mdout.println(f.commentText());
         htmlout.println("<p>"+f.commentText()+"</p>");
         mdout.println("");

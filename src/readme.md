@@ -21,20 +21,20 @@ To make sources.txt file:
 
 ~~~~~
 spot7> cd /home/jbf/temp/autoplot
-spot7> find * -name '*.java' -exec echo /home/jbf/temp/autoplot/{} \; > /home/jbf/ct/git/MarkdownDoclet/sources.txt 
+spot7> find * -name '*.java' -exec echo `pwd`/{} \; > /home/jbf/git/MarkdownDoclet/sources.txt
 ~~~~~
 
 Build using Netbeans, and then test like so on nudnik.physics.uiowa.edu:
 
-nudnik> javadoc -docletpath /home/jbf/ct/git/MarkdownDoclet/dist/MarkdownDoclet.jar \
+nudnik> javadoc -docletpath /home/jbf/git/MarkdownDoclet/dist/MarkdownDoclet.jar \
    -doclet tips.DocletTip \
    /home/jbf/project/autoplot/autoplot-code/QDataSet/src/org/das2/qds/ops/Ops.java
 
 And to debug from Netbeans:
 ~~~~~
-spot7> cd /home/jbf/ct/git/MarkdownDoclet/ 
+spot7> cd /home/jbf/git/MarkdownDoclet/ 
 spot7> javadoc -J-Xrunjdwp:server=y,transport=dt_socket,address=12345,suspend=y \
-   -docletpath /home/jbf/ct/git/MarkdownDoclet/dist/MarkdownDoclet.jar \
+   -docletpath /home/jbf/git/MarkdownDoclet/dist/MarkdownDoclet.jar \
    -doclet tips.DocletTip \
    @sources.txt
 ~~~~~
@@ -42,10 +42,10 @@ spot7> javadoc -J-Xrunjdwp:server=y,transport=dt_socket,address=12345,suspend=y 
 
 ~~~~~
 nudnuk> cd /home/jbf/git/MarkdownDoclet/
-nudnuk> javadoc -J-Xrunjdwp:server=y,transport=dt_socket,address=12345,suspend=y \
-   -docletpath /home/jbf/git/MarkdownDoclet/dist/MarkdownDoclet.jar \
-   -doclet tips.DocletTip \
-   @sources.txt
+nudnuk> javadoc -docletpath /home/jbf/git/MarkdownDoclet/dist/MarkdownDoclet.jar 
+  -J-Dmddoc=/home/jbf/project/rbsp/git/autoplot/doc/ 
+  -J-Dhtmldoc=/home/jbf/Linux/public_html/autoplot/doc/  
+  -doclet tips.DocletTip    @sources.txt
 ~~~~~
 
 To run the entire lot:

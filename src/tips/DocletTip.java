@@ -344,10 +344,12 @@ public class DocletTip {
         }
         String postHash= null;
         int ihash= clas.indexOf("#");
-        if ( ihash>-1 ) {
+        if ( ihash>0 ) {
             postHash= clas.substring(ihash);
             clas= clas.substring(0,ihash);
-        } 
+        } else if ( ihash==0 ) {
+            return clas;
+        }
         String[] ss= clas.split("\\.",-2);
         if ( ss.length==1 ) {
             return ss[0]+".html" + ( postHash!=null ? postHash : "" );
@@ -375,10 +377,12 @@ public class DocletTip {
         }
         String postHash= null;
         int ihash= clas.indexOf("#");
-        if ( ihash>-1 ) {
+        if ( ihash>0 ) {
             postHash= clas.substring(ihash);
             clas= clas.substring(0,ihash);
-        } 
+        } else if ( ihash==0 ) {
+            return clas;
+        }
         String[] ss= clas.split("\\.",-2);
         if ( ss.length==1 ) {
             return ss[0]+".md" + ( postHash!=null ? postHash : "" );

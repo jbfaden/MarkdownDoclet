@@ -1,8 +1,12 @@
 # MarkdownDoclet
-Experiment with Javadoc Doclet which writes markdown instead of html.  This is 
-prints the markdown to stdout while processing, which is probably not the "right"
-way to do this.  I'm not sure if this can be done cleanly, but worse case I'll 
-ignore the html output.
+Experiment with Javadoc Doclet which writes markdown instead of html.  The
+two environment variables, "mddoc" and "htmldoc" are the locations of 
+directories where a HTML version of the documentation and a MarkDown version
+of the documentation should be created.
+
+This is kludged a little bit for Autoplot, where the class Ops is so large it
+was causing GitLabs to fail.  Also, several familiar classes like QDataSet
+and Datum have special handling as well.
 
 https://docs.oracle.com/javase/7/docs/jdk/api/javadoc/doclet/
 

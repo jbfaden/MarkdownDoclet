@@ -430,11 +430,11 @@ public class DocletTip {
                 continue;
             }
 
-//            if ( fullName.startsWith("org.autoplot.jythonsupport.Util" ) ) {
-//                System.err.println("found class: "+fullName);
-//            } else {
-//                continue;
-//            }
+            if ( fullName.startsWith("org.autoplot.jythonsupport.Util" ) ) {
+                System.err.println("found class: "+fullName);
+            } else {
+                continue;
+            }
             
             PrintStream mdout= null;
             PrintStream htmlout= null;
@@ -672,6 +672,19 @@ public class DocletTip {
         
     }
 
+    private String aAn( String typeName ) {
+        if ( typeName.equals("int") ) {
+            System.err.println("herestop");
+        }
+        String vowel= "aeiou";
+        if ( vowel.indexOf( Character.toLowerCase(typeName.charAt(0)) )>-1 ) {
+            return "an "+typeName;
+        } else {
+            return "a "+typeName;
+        }
+                
+    }
+    
     private boolean doOneMethod(PrintStream mdout, PrintStream htmlout, StringBuilder ahrefBuilder, MethodDoc m, String name, String sb1, boolean byAlpha, String classNameNoPackage) {
         mdout.println("***");
         htmlout.println("<hr>");
@@ -714,8 +727,8 @@ public class DocletTip {
                 ParamTag pt1= pat.get(parameter.name());
                 String comment= pt1==null ? "" : pt1.parameterComment();
                 if ( comment.length()==0 ) {
-                    mdout.println(""+parameter.name() + " - a " + parameter.typeName() );
-                    htmlout.println(""+parameter.name() + " - a " + parameter.typeName() );
+                    mdout.println(""+parameter.name() + " - " + aAn(parameter.typeName()) );
+                    htmlout.println(""+parameter.name() + " - " + aAn(parameter.typeName()) );
                 } else {
                     mdout.println(""+parameter.name() + " - " + comment );
                     htmlout.println(""+parameter.name() + " - " + comment );
@@ -733,8 +746,8 @@ public class DocletTip {
                 mdout.println( s1.trim() );
                 htmlout.println( s1.trim() );
             } else {
-                mdout.println( "a " + colloquialName( m.returnType().toString() ) );
-                htmlout.println( "a " + colloquialName( m.returnType().toString() ) );
+                mdout.println( aAn( colloquialName( m.returnType().toString() ) ) );
+                htmlout.println( aAn( colloquialName( m.returnType().toString() ) ) );
                 mdout.println("");
                 htmlout.println( "" );
             }

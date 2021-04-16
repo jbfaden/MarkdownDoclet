@@ -430,11 +430,11 @@ public class DocletTip {
                 continue;
             }
 
-            if ( fullName.startsWith("org.autoplot.jythonsupport.Util" ) ) {
-                System.err.println("found class: "+fullName);
-            } else {
-                continue;
-            }
+            //if ( fullName.startsWith("org.autoplot.jythonsupport.Util" ) ) {
+            //    System.err.println("found class: "+fullName);
+            //} else {
+            //    continue;
+            //}
             
             PrintStream mdout= null;
             PrintStream htmlout= null;
@@ -673,9 +673,6 @@ public class DocletTip {
     }
 
     private String aAn( String typeName ) {
-        if ( typeName.equals("int") ) {
-            System.err.println("herestop");
-        }
         String vowel= "aeiou";
         if ( vowel.indexOf( Character.toLowerCase(typeName.charAt(0)) )>-1 ) {
             return "an "+typeName;
@@ -782,10 +779,6 @@ public class DocletTip {
             l = t.text().substring(0,it+1);
         } else {
             l = t.text();
-        }
-        
-        if ( l.contains("Schemes") ) {
-            System.err.println("herestop");
         }
         
         System.err.println("see "+l +  " " +byAlpha );

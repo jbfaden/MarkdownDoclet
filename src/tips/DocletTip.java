@@ -114,9 +114,11 @@ public class DocletTip {
      */
     private static String markDownSafeSummary( String s ) {
         if ( s.length()>120 ) s= s.substring(0,120);
+        int i= s.indexOf(". ");
+        if ( i>-1 ) s= s.substring(0,i+1);
         s= s.replaceAll("\\n"," ");
         s= s.replaceAll("\\*","&ast;");
-        Pattern p= Pattern.compile("[^0-9a-zA-Z,\\.\\-\\[\\] _&;*/]");
+        Pattern p= Pattern.compile("[^0-9a-zA-Z,\\.\\-\\[\\]\\(\\)\\:\\+\\\" _&;*/]");
         Matcher m= p.matcher(s);
         if ( m.find() ) {
             s=  s.substring(0,m.start());
@@ -499,10 +501,10 @@ public class DocletTip {
                 mdout = new PrintStream(mdf);
                 htmlout= new PrintStream(htmlf);
                 
-                mdout.append("# "+fullName );
+                mdout.append("# "+fullName + "\n\n" );
                 htmlout.append("<h2>"+fullName+"</h2>");
                 
-                mdout.append( classe.commentText() ).append("\n");
+                mdout.append( classe.commentText() ).append("\n\n");
                 htmlout.append("<p>").append(classe.commentText()).append("</p>\n");
                 
                 if ( !mdf.getParentFile().exists() ) {
@@ -573,6 +575,7 @@ public class DocletTip {
                     if ( doOneMethod(mdout, htmlout, ahrefBuilder, m, name, sb1, byAlpha, classNameNoPackage) ) continue;
                     
                     mdout.println( String.format( "\n<a href=\"https://github.com/autoplot/dev/search?q=%s&unscoped_q=%s\">[search for examples]</a>", name, name ) );
+                    mdout.println( String.format( "\n<a href=\"https://github.com/autoplot/documentation/blob/master/javadoc/index-all.md\">[return to index]</a>", name, name ) );
                     htmlout.println( String.format( "<br><br>\n<a href=\"https://github.com/autoplot/dev/search?q=%s&unscoped_q=%s\">[search for examples]</a>", name, name ) );
                     htmlout.println( String.format( " <a href=\"https://github.com/autoplot/documentation/wiki/doc/%s\">[view on GitHub]</a>", loc ) );
                     //                                        //http://www-pw.physics.uiowa.edu/~jbf/autoplot/javadoc2018/org/autoplot/fits/FitsDataSource.html
@@ -599,7 +602,7 @@ public class DocletTip {
                             grandIndex.put( name, s + ".md#"+name );
                         }
                         String firstSentence= m.commentText();
-                        grandIndexFirstLine.put( name, firstSentence.substring(0,Math.min(120,firstSentence.length()) ) );
+                        grandIndexFirstLine.put( name, firstSentence );
                         grandIndexClass.put( name, classe.qualifiedName() );
                         grandIndexSignature.put( name, signature.toString() );
                     }
@@ -894,7 +897,7 @@ public class DocletTip {
         
         signature( sb, ahrefBuilder, signature, c);
         
-        mdout.println( sb.toString() );
+        mdout.println( "# "+sb.toString() );
         htmlout.println("<h2>"+sb.toString() +"</h2>");
         
         mdout.println(c.commentText());

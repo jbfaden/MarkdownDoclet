@@ -27,7 +27,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Doclet which creats both simplified HTML version and MarkDown version.
+ * Doclet which creates both simplified HTML version and MarkDown version.
  * From https://www.zdnet.com/article/customize-javadoc-output-with-doclets/
  * To re-run the source for http://autoplot.org/wiki/index.php?title=developer.scripting&amp;action=edit&amp;section=68
  * you would: javadoc -docletpath /home/jbf/eg/java/javadoclet/DocletTip/dist/DocletTip.jar -doclet tips.DocletTip /home/jbf/project/autoplot/autoplot-code/QDataSet/src/org/das2/qds/ops/Ops.java
@@ -113,7 +113,10 @@ public class DocletTip {
      * @return 
      */
     private static String markDownSafeSummary( String s ) {
-        Pattern p= Pattern.compile("[^0-9a-zA-Z,\\. _]");
+        if ( s.length()>120 ) s= s.substring(0,120);
+        s= s.replaceAll("\\n"," ");
+        s= s.replaceAll("\\*","&ast;");
+        Pattern p= Pattern.compile("[^0-9a-zA-Z,\\.\\-\\[\\] _&;*/]");
         Matcher m= p.matcher(s);
         if ( m.find() ) {
             s=  s.substring(0,m.start());
@@ -393,7 +396,7 @@ public class DocletTip {
     }
     
     Map<String,String> grandIndex= new HashMap<>();
-    Map<String,String> grandIndexFirst= new HashMap<>();
+    Map<String,String> grandIndexFirstLine= new HashMap<>();
     Map<String,String> grandIndexClass= new HashMap<>();
     Map<String,String> grandIndexSignature= new HashMap<>();
         
@@ -596,7 +599,7 @@ public class DocletTip {
                             grandIndex.put( name, s + ".md#"+name );
                         }
                         String firstSentence= m.commentText();
-                        grandIndexFirst.put( name, firstSentence.substring(0,Math.min(60,firstSentence.length()) ) );
+                        grandIndexFirstLine.put( name, firstSentence.substring(0,Math.min(120,firstSentence.length()) ) );
                         grandIndexClass.put( name, classe.qualifiedName() );
                         grandIndexSignature.put( name, signature.toString() );
                     }
@@ -617,17 +620,17 @@ public class DocletTip {
                 if ( k.length()==0 ) continue;
                 indexOut.print("<a href=\""+grandIndex.get(k)+"\">");
                 if ( grandIndexSignature.containsKey(k) ) {
-                    indexOut.print(grandIndexSignature.get(k));
+                    indexOut.print( maybeQualifySignature(k) );
                 } else {
                     indexOut.print(k);
                 }
-                String s= markDownSafeSummary(grandIndexFirst.get(k));
+                String s= markDownSafeSummary(grandIndexFirstLine.get(k));
                 if ( s.length()>0 ) {
-                    indexOut.print("</a> of "+ grandIndexClass.get(k) + " - " );
+                    indexOut.print("</a>"+maybeQualify( k ) + " - " );
                     indexOut.print(s);
                     indexOut.println("<br>");
                 } else {
-                    indexOut.print("</a> of "+ grandIndexClass.get(k) );
+                    indexOut.print("</a> "+maybeQualify( k ) );
                     indexOut.println("<br>");
                 }
             }
@@ -648,13 +651,13 @@ public class DocletTip {
                 //}
                 indexOut.print("<a href=\""+grandIndex.get(k).replaceAll("\\.md",".html")+"\">");
                 indexOut.print( grandIndexSignature.get(k) );
-                String s= markDownSafeSummary(grandIndexFirst.get(k));
+                String s= markDownSafeSummary(grandIndexFirstLine.get(k));
                 if ( s.length()>0 ) {
-                    indexOut.print("</a> of "+ grandIndexClass.get(k) + " - " );
+                    indexOut.print("</a> "+ maybeQualify( k ) + " - " );
                     indexOut.print(s);
                     indexOut.println("<br>");
                 } else {
-                    indexOut.print("</a> of "+ grandIndexClass.get(k) );
+                    indexOut.print("</a> " + maybeQualify(k) );
                     indexOut.println("<br>");
                 }
             }
@@ -663,7 +666,7 @@ public class DocletTip {
         }
         
         System.err.println("****");
-        System.err.println("v20200219_0842");
+        System.err.println("v20200423_0759");
         System.err.println("htmldoc documentation written to "+htmldoc);
         System.err.println("mddoc documentation written to "+mddoc);
         System.err.println("****");
@@ -680,6 +683,33 @@ public class DocletTip {
             return "a "+typeName;
         }
                 
+    }
+    
+    /**
+     * In the index, only say "of the.java.package" when the thing is not automatically imported.
+     * @param k
+     * @return 
+     */
+    private String maybeQualify( String k ) {
+        String full= grandIndexClass.get(k);
+        if ( "org.das2.qds.ops.Ops".equals(full) ) {
+            return "";
+        } else if ( "org.autoplot.ScriptContext".equals(full) ) {
+            return "";
+        } else if ( "org.autoplot.jythonsupport.JythonOps".equals(full) ) {
+            return "";
+        } else {
+            return " of "+ full;
+        }
+    }
+    
+    private String maybeQualifySignature( String k ) {
+        String full= grandIndexSignature.get(k);
+        if ( full.startsWith( "org.das2.qds.ops.Ops" ) ) {
+            return k;
+        } else {
+            return full;
+        }
     }
     
     private boolean doOneMethod(PrintStream mdout, PrintStream htmlout, StringBuilder ahrefBuilder, MethodDoc m, String name, String sb1, boolean byAlpha, String classNameNoPackage) {
@@ -850,7 +880,7 @@ public class DocletTip {
                 grandIndex.put( name, s + ".md#"+name );
             }
             String firstSentence= f.commentText();
-            grandIndexFirst.put( name, firstSentence.substring(0,Math.min(60,firstSentence.length()) ) );
+            grandIndexFirstLine.put( name, firstSentence );
             grandIndexClass.put( name, classe.qualifiedName() );
             grandIndexSignature.put( name, classe.qualifiedName() + "." + name );
         }
@@ -882,18 +912,35 @@ public class DocletTip {
                 grandIndex.put( name, s + ".md#"+name );
             }
             String firstSentence= c.commentText();
-            grandIndexFirst.put( name, firstSentence.substring(0,Math.min(60,firstSentence.length()) ) );
+            grandIndexFirstLine.put( name, firstSentence );
             grandIndexClass.put( name, classe.qualifiedName() );
-            grandIndexSignature.put( name, classe.qualifiedName() + "." + name );
+            grandIndexSignature.put( name, classe.qualifiedName() );
         }
     }
     
     /**
-     * 
+     *
      * @param root the root which is set at the command line.
      * @return true if things worked.
      */
-     public static boolean start(RootDoc root) {
-         return new DocletTip().doStart(root);
-     }
+    public static boolean start(RootDoc root) {
+        String s;
+        s = System.getProperty("mdout");
+        if (s != null) {
+            mddoc = new File(s);
+            if (!(mddoc.exists() || mddoc.getParentFile().canWrite())) {
+                throw new RuntimeException("Unable to write to " + mddoc);
+            }
+        }
+        s = System.getProperty("htmlout");
+        if (s != null) {
+            htmldoc = new File(s);
+            if (!(htmldoc.exists() || htmldoc.getParentFile().canWrite())) {
+                throw new RuntimeException("Unable to write to " + htmldoc);
+            }
+        }
+        System.err.println("Writing markdown to " + mddoc);
+        System.err.println("Writing html to " + htmldoc);
+        return new DocletTip().doStart(root);
+    }
 } 

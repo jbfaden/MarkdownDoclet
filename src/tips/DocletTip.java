@@ -40,6 +40,8 @@ import java.util.regex.Pattern;
  */
 public class DocletTip {
 
+    private static Logger logger= Logger.getLogger("doclettip");
+    
     private static File mddoc= new File("/home/jbf/project/rbsp/git/autoplot/doc/");
     private static File htmldoc= new File("/home/jbf/Linux/public_html/autoplot/doc/");
     
@@ -401,15 +403,6 @@ public class DocletTip {
     Map<String,String> grandIndexFirstLine= new HashMap<>();
     Map<String,String> grandIndexClass= new HashMap<>();
     Map<String,String> grandIndexSignature= new HashMap<>();
-        
-    String sdoc;
-    {
-        sdoc= System.getenv("mddoc"); 
-        if ( sdoc!=null )  mddoc= new File( sdoc );
-        
-        sdoc= System.getenv("htmldoc");
-        if ( sdoc!=null ) htmldoc= new File( sdoc );
-    }
     
     public boolean doStart( RootDoc root ) {
             
@@ -575,7 +568,7 @@ public class DocletTip {
                     if ( doOneMethod(mdout, htmlout, ahrefBuilder, m, name, sb1, byAlpha, classNameNoPackage) ) continue;
                     
                     mdout.println( String.format( "\n<a href=\"https://github.com/autoplot/dev/search?q=%s&unscoped_q=%s\">[search for examples]</a>", name, name ) );
-                    mdout.println( String.format( "\n<a href=\"https://github.com/autoplot/documentation/blob/master/javadoc/index-all.md\">[return to index]</a>", name, name ) );
+                    mdout.println( String.format( "<a href=\"https://github.com/autoplot/documentation/blob/master/javadoc/index-all.md\">[return to index]</a>", name, name ) );
                     htmlout.println( String.format( "<br><br>\n<a href=\"https://github.com/autoplot/dev/search?q=%s&unscoped_q=%s\">[search for examples]</a>", name, name ) );
                     htmlout.println( String.format( " <a href=\"https://github.com/autoplot/documentation/wiki/doc/%s\">[view on GitHub]</a>", loc ) );
                     //                                        //http://www-pw.physics.uiowa.edu/~jbf/autoplot/javadoc2018/org/autoplot/fits/FitsDataSource.html
@@ -814,7 +807,7 @@ public class DocletTip {
             l = t.text();
         }
         
-        System.err.println("see "+l +  " " +byAlpha );
+        logger.log(Level.FINE, "see {0} {1}", new Object[]{l, byAlpha});
         
         String link= l;
         int ii= link.indexOf("(");
@@ -922,12 +915,24 @@ public class DocletTip {
     }
     
     /**
-     *
+     * Start the generation of Javadoc.  The output is 
+     * created in mddoc, which can be set using the 
+     * environment variable mddoc or the command line property mddoc.
+     * Likewise, htmldoc can be set this way too.
      * @param root the root which is set at the command line.
      * @return true if things worked.
      */
     public static boolean start(RootDoc root) {
         String s;
+        
+        String sdoc;
+ 
+        sdoc= System.getenv("mddoc"); 
+        if ( sdoc!=null ) mddoc= new File( sdoc );
+        
+        sdoc= System.getenv("htmldoc");
+        if ( sdoc!=null ) htmldoc= new File( sdoc );
+        
         s = System.getProperty("mdout");
         if (s != null) {
             mddoc = new File(s);
@@ -942,8 +947,11 @@ public class DocletTip {
                 throw new RuntimeException("Unable to write to " + htmldoc);
             }
         }
-        System.err.println("Writing markdown to " + mddoc);
-        System.err.println("Writing html to " + htmldoc);
+        
+        System.err.println("****");
+        System.err.println("Writing htmldoc documentation to " + htmldoc);
+        System.err.println("Writing mddoc documentation to " + mddoc);
+        
         return new DocletTip().doStart(root);
     }
 } 

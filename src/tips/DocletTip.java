@@ -497,7 +497,7 @@ public class DocletTip {
                 mdout.append("# "+fullName + "\n\n" );
                 htmlout.append("<h2>"+fullName+"</h2>");
                 
-                mdout.append( classe.commentText() ).append("\n\n");
+                mdout.append( handleText( classe.commentText() ) ).append("\n\n");
                 htmlout.append("<p>").append(classe.commentText()).append("</p>\n");
                 
                 if ( !mdf.getParentFile().exists() ) {
@@ -893,7 +893,7 @@ public class DocletTip {
         mdout.println( "# "+sb.toString() );
         htmlout.println("<h2>"+sb.toString() +"</h2>");
         
-        mdout.println(c.commentText());
+        mdout.println( handleText(c.commentText()) );
         htmlout.println("<p>"+c.commentText()+"</p>");
         
         mdout.println("");

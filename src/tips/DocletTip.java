@@ -42,8 +42,8 @@ public class DocletTip {
 
     private static Logger logger= Logger.getLogger("doclettip");
     
-    private static File mddoc= new File("/home/jbf/project/rbsp/git/autoplot/doc/");
-    private static File htmldoc= new File("/home/jbf/Linux/public_html/autoplot/doc/");
+    private static File mddoc= new File("/");
+    private static File htmldoc= new File("/");
     
     /**
      * convert colloquial "QDataSet" to "org.das2.qds.QDataSet" and
@@ -940,7 +940,7 @@ public class DocletTip {
                 throw new RuntimeException("Unable to write to " + mddoc);
             }
         }
-        s = System.getProperty("htmlout");
+        s = System.getProperty("htmldoc");
         if (s != null) {
             htmldoc = new File(s);
             if (!(htmldoc.exists() || htmldoc.getParentFile().canWrite())) {
@@ -948,9 +948,16 @@ public class DocletTip {
             }
         }
         
-        System.err.println("****");
-        System.err.println("Writing htmldoc documentation to " + htmldoc);
-        System.err.println("Writing mddoc documentation to " + mddoc);
+        if ( mddoc.getAbsolutePath().equals("/") || htmldoc.getAbsolutePath().equals("/") ) {
+            System.err.println("****");
+            System.err.println("htmldoc must be set to the target location for html documentation (export htmldoc ...)");
+            System.err.println("mddoc must be set to the target location for html documentation (export mddoc ...)");
+            return false;
+        } else {
+            System.err.println("****");
+            System.err.println("Writing htmldoc documentation to " + htmldoc);
+            System.err.println("Writing mddoc documentation to " + mddoc);
+        }
         
         return new DocletTip().doStart(root);
     }

@@ -115,12 +115,13 @@ public class DocletTip {
      * @return 
      */
     private static String markDownSafeSummary( String s ) {
+        if ( s.length()==0 ) return s;
         if ( s.length()>120 ) s= s.substring(0,120);
         int i= s.indexOf(". ");
         if ( i>-1 ) s= s.substring(0,i+1);
-        if ( !s.endsWith(".") ) {
+        if ( !s.endsWith(".") && s.length()==120 ) {
             i= s.lastIndexOf(" ");
-            s= s.substring(0,i) + "...";
+            if ( i>-1 ) s= s.substring(0,i) + "...";
         }
         
         s= s.replaceAll("\\n"," ");

@@ -118,6 +118,11 @@ public class DocletTip {
         if ( s.length()>120 ) s= s.substring(0,120);
         int i= s.indexOf(". ");
         if ( i>-1 ) s= s.substring(0,i+1);
+        if ( !s.endsWith(".") ) {
+            i= s.lastIndexOf(" ");
+            s= s.substring(0,i) + "...";
+        }
+        
         s= s.replaceAll("\\n"," ");
         s= s.replaceAll("\\*","&ast;");
         Pattern p= Pattern.compile("[^0-9a-zA-Z,\\.\\-\\[\\]\\(\\)\\:\\+\\\" _&;*/]");
@@ -933,7 +938,7 @@ public class DocletTip {
         sdoc= System.getenv("htmldoc");
         if ( sdoc!=null ) htmldoc= new File( sdoc );
         
-        s = System.getProperty("mdout");
+        s = System.getProperty("mddoc");
         if (s != null) {
             mddoc = new File(s);
             if (!(mddoc.exists() || mddoc.getParentFile().canWrite())) {

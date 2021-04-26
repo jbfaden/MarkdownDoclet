@@ -570,7 +570,7 @@ public class DocletTip {
                     mdout.println( String.format( "\n<a href=\"https://github.com/autoplot/dev/search?q=%s&unscoped_q=%s\">[search for examples]</a>", name, name ) );
                     mdout.println( String.format( "<a href=\"https://github.com/autoplot/documentation/blob/master/javadoc/index-all.md\">[return to index]</a>", name, name ) );
                     htmlout.println( String.format( "<br><br>\n<a href=\"https://github.com/autoplot/dev/search?q=%s&unscoped_q=%s\">[search for examples]</a>", name, name ) );
-                    htmlout.println( String.format( " <a href=\"https://github.com/autoplot/documentation/wiki/doc/%s\">[view on GitHub]</a>", loc ) );
+                    htmlout.println( String.format( " <a href=\"https://github.com/autoplot/documentation/tree/master/javadoc/%s\">[view on GitHub]</a>", loc ) );
                     //                                        //http://www-pw.physics.uiowa.edu/~jbf/autoplot/javadoc2018/org/autoplot/fits/FitsDataSource.html
                     String htmlLoc;
                     if ( byAlpha ) {

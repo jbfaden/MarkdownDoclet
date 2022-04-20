@@ -235,7 +235,15 @@ public class DocletTip {
             //if ( k>0 ) ahrefBuilder.append(",");
             if ( k>0 ) signature.append(",");
             Parameter pk= m.parameters()[k];
-            sb.append(colloquialName(pk.type().toString())).append(" ").append(pk.name());
+            
+            String sarg= colloquialName(pk.type().toString());
+            String link= getHtmlLinkFor(pk.type().qualifiedTypeName());
+            
+            if ( link!=null ) {
+                sb.append("<a href='").append(link).append("'>").append( sarg ).append("</a>").append(" ").append(pk.name());
+            } else {
+                sb.append(sarg).append(" ").append(pk.name());
+            }
             //ahrefBuilder.append( pk.type().toString() );
             signature.append(pk.name());
         }                    
@@ -244,8 +252,14 @@ public class DocletTip {
         
         if ( m instanceof MethodDoc ) {
             MethodDoc md= (MethodDoc)m;
-            String sreturn = colloquialName(md.returnType().simpleTypeName() );
-            sb.append(" ) &rarr; ").append( sreturn );
+            String sreturn;
+            String link= getHtmlLinkFor(md.returnType().qualifiedTypeName());
+            sreturn= colloquialName(md.returnType().simpleTypeName() );
+            if ( link!=null ) {
+                sb.append(" ) &rarr; <a href='").append(link).append("'>").append( sreturn ).append("</a>");
+            } else {
+                sb.append(" ) &rarr; ").append( sreturn );
+            }
         } else {
             if ( m.parameters().length>0 ) {
                 sb.append(" )");
@@ -355,6 +369,12 @@ public class DocletTip {
         if ( clas.startsWith("http") ) {
             return clas;
         }
+        if ( clas.equals("void") ) {
+            return null;
+        }
+        if ( !clas.contains(".") ) { // int, double, ...
+            return null;
+        }
         String postHash= null;
         int ihash= clas.indexOf("#");
         if ( ihash>0 ) {
@@ -366,6 +386,9 @@ public class DocletTip {
         String[] ss= clas.split("\\.",-2);
         if ( ss.length==1 ) {
             return ss[0]+".html" + ( postHash!=null ? postHash : "" );
+        } else if ( clas.startsWith("java.") ) {
+            String base= "https://docs.oracle.com/javase/8/docs/api/";
+            return base + String.join( "/", ss ) + ".html" + ( postHash!=null ? postHash : "" );
         } else {
             String base= "http://www-pw.physics.uiowa.edu/~jbf/autoplot/doc/";
             return base + String.join( "/", ss ) + ".html" + ( postHash!=null ? postHash : "" );
@@ -537,10 +560,6 @@ public class DocletTip {
                     if ( !m.isPublic() ) continue;
                     
                     String name= m.name();
-
-                    //if ( name.equals("fftPower") && fullName.contains("org.das2.math" ) ) {
-                    //    System.err.println("handling the method: "+name);
-                    //}
                     
                     if ( byAlpha ) {
                         if ( name.charAt(0)!=currentLetter ) {
@@ -956,8 +975,11 @@ public class DocletTip {
         
         if ( mddoc.getAbsolutePath().equals("/") || htmldoc.getAbsolutePath().equals("/") ) {
             System.err.println("****");
-            System.err.println("htmldoc must be set to the target location for html documentation (export htmldoc ...)");
-            System.err.println("mddoc must be set to the target location for html documentation (export mddoc ...)");
+            System.err.println("htmldoc must be set to the target location for html documentation (export htmldoc=/tmp/htmldoc/)");
+            System.err.println("mddoc must be set to the target location for markdown documentation (export mddoc=/tmp/mddoc/)");
+            System.err.println("");
+            System.err.println("ABNORMAL EXIT");
+            System.err.println("");
             return false;
         } else {
             System.err.println("****");

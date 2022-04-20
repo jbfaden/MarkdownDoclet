@@ -20,8 +20,8 @@ popup in Autoplot, so a simplified HTML version is created as well.
 To make sources.txt file:
 
 ~~~~~
-spot7> cd /home/jbf/temp/autoplot
-spot7> find * -name '*.java' -exec echo `pwd`/{} \; > /home/jbf/git/MarkdownDoclet/sources.txt
+spot9> cd /home/jbf/temp/autoplot
+spot9> find * -name '*.java' -exec echo `pwd`/{} \; > /home/jbf/ct/netbeansProjects/MarkdownDoclet/sources.txt
 ~~~~~
 
 Build using Netbeans, and then test like so on nudnik.physics.uiowa.edu:
@@ -32,16 +32,16 @@ nudnik> javadoc -docletpath /home/jbf/git/MarkdownDoclet/dist/MarkdownDoclet.jar
 
 And to debug from Netbeans:
 ~~~~~
-spot7> cd /home/jbf/git/MarkdownDoclet/ 
-spot7> javadoc -J-Xrunjdwp:server=y,transport=dt_socket,address=12345,suspend=y \
-   -docletpath /home/jbf/git/MarkdownDoclet/dist/MarkdownDoclet.jar \
+spot9> cd /home/jbf/ct/netbeansProjects/MarkdownDoclet/ 
+spot9> javadoc -J-Xrunjdwp:server=y,transport=dt_socket,address=12345,suspend=y \
+   -docletpath /home/jbf/ct/netbeansProjects/MarkdownDoclet/dist/MarkdownDoclet.jar \
    -doclet tips.DocletTip \
    @sources.txt
 ~~~~~
 ~~~~~
 
 ~~~~~
-nudnuk> cd /home/jbf/git/MarkdownDoclet/
+nudnuk> cd /home/jbf/ct/netbeansProjects/MarkdownDoclet/
 nudnuk> javadoc -docletpath /home/jbf/git/MarkdownDoclet/dist/MarkdownDoclet.jar 
   -J-Dmddoc=/home/jbf/project/rbsp/git/autoplot/doc/ 
   -J-Dhtmldoc=/home/jbf/Linux/public_html/autoplot/doc/  

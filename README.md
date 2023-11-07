@@ -8,3 +8,6 @@ Jython editors.  Presently this is hacked a bit for running on nudnik,
 where it writes its output to /home/jbf/public_html/autoplot/doc.
 Its markdown output is to /home/jbf/project/rbsp/git/autoplot/doc or
 https://git.uiowa.edu/jbf/autoplot/-/blob/master/doc/
+
+# See also developer's notes
+See also src/readme.md

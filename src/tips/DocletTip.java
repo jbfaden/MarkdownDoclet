@@ -467,8 +467,10 @@ public class DocletTip {
             PrintStream htmlout= null;
             try {
                 String s = classe.qualifiedName();
-                //if ( s.endsWith("QDataSet") ) {
-                //    seePlotElement= true;
+                System.err.println("class: "+s);
+                //if ( s.endsWith(".BufferDataSet") ) {
+                    //seePlotElement= true;
+                //    System.err.println("here at 472");
                 //}
                     
                 int is= 0;
@@ -553,7 +555,7 @@ public class DocletTip {
                 }
                 
                 // ** loop over methods **
-                
+                System.err.println("  # methods: "+nmethod );
                 for (int j = 0; j < Math.min( 20000, nmethod ); j++) {
                     MethodDoc m= methods[j];
                     

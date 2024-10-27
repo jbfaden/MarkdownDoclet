@@ -21,6 +21,7 @@ To make sources.txt file:
 
 ~~~~~
 spot9> cd /home/jbf/temp/autoplot
+spot9> rm -rf Autoplot/temp-volatile-src/
 spot9> find * -name '*.java' -exec echo `pwd`/{} \; > /home/jbf/ct/netbeansProjects/MarkdownDoclet/sources.txt
 ~~~~~
 

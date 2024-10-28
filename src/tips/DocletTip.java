@@ -463,11 +463,19 @@ public class DocletTip {
             //    continue;
             //}
             
+            boolean toPrint=false;
+            
             PrintStream mdout= null;
             PrintStream htmlout= null;
             try {
                 String s = classe.qualifiedName();
-                System.err.println("class: "+s);
+                
+                //if ( s.contains("AsciiParser") ) {
+                //    toPrint=true;
+                //}
+                                    
+                if ( toPrint ) System.err.println("class: "+s);
+                
                 //if ( s.endsWith(".BufferDataSet") ) {
                     //seePlotElement= true;
                 //    System.err.println("here at 472");
@@ -555,7 +563,11 @@ public class DocletTip {
                 }
                 
                 // ** loop over methods **
-                System.err.println("  # methods: "+nmethod );
+                if (toPrint) {
+                    if ( nmethod==0 ) System.err.println("  #################");
+                    System.err.println("  # methods: "+nmethod + "  byAlpha: "+byAlpha + "  toFile: "+mdf.toString() );
+                    if ( nmethod==0 ) System.err.println("  #################");
+                }
                 for (int j = 0; j < Math.min( 20000, nmethod ); j++) {
                     MethodDoc m= methods[j];
                     
@@ -563,6 +575,7 @@ public class DocletTip {
                     
                     String name= m.name();
                     
+                    if (toPrint) System.err.println("  method: " + name );
                     if ( byAlpha ) {
                         if ( name.charAt(0)!=currentLetter ) {
                             mdout.close();
@@ -626,7 +639,9 @@ public class DocletTip {
                         grandIndexClass.put( name, classe.qualifiedName() );
                         grandIndexSignature.put( name, signature.toString() );
                     }
+                    if (toPrint) System.err.println("  done method: " + name );
                 }
+                
             }catch (FileNotFoundException ex) {
                 Logger.getLogger(DocletTip.class.getName()).log(Level.SEVERE, null, ex);
             } finally {

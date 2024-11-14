@@ -77,27 +77,33 @@ public class DocletTip {
     }
     
     private static String colloquialName( String name ) {
+        String suffix="";
+        int i= name.indexOf("[");
+        if ( i>-1 ) {
+            suffix= name.substring(i);
+            name= name.substring(0,i);
+        }
         switch (name) {
             case "org.das2.qds.QDataSet":
-                return "QDataSet";
+                return "QDataSet"+suffix;
             case "org.das2.util.monitor.ProgressMonitor":
-                return "ProgressMonitor";
+                return "ProgressMonitor"+suffix;
             case "org.das2.datum.Units":
-                return "Units";
+                return "Units"+suffix;
             case "org.das2.datum.Datum":
-                return "Datum";
+                return "Datum"+suffix;
             case "org.das2.datum.DatumRange":
-                return "DatumRange";
+                return "DatumRange"+suffix;
             case "java.lang.Object":
-                return "Object";
+                return "Object"+suffix;
             case "java.lang.String":
-                return "String";
+                return "String"+suffix;
             case "java.lang.Number":
-                return "Number";
+                return "Number"+suffix;
             case "java.lang.Double":
-                return "Double";
+                return "Double"+suffix;
             default:
-                return name;
+                return name+suffix;
         }
     }
     
@@ -236,7 +242,7 @@ public class DocletTip {
             if ( k>0 ) signature.append(",");
             Parameter pk= m.parameters()[k];
             
-            String sarg= colloquialName(pk.type().toString())+ pk.type().dimension();
+            String sarg= colloquialName(pk.type().toString());
             String link= getHtmlLinkFor(pk.type().qualifiedTypeName());
             
             if ( link!=null ) {
@@ -254,7 +260,7 @@ public class DocletTip {
             MethodDoc md= (MethodDoc)m;
             String sreturn;
             String link= getHtmlLinkFor(md.returnType().qualifiedTypeName());
-            sreturn= colloquialName(md.returnType().simpleTypeName() ) + md.returnType().dimension();
+            sreturn= colloquialName(md.returnType().toString() );
             if ( link!=null ) {
                 sb.append(" ) &rarr; <a href='").append(link).append("'>").append( sreturn ).append("</a>");
             } else {
@@ -811,13 +817,13 @@ public class DocletTip {
                 mdout.println( s1.trim() );
                 htmlout.println( s1.trim() );
             } else {
-                mdout.println( aAn( colloquialName( m.returnType().toString() + m.returnType().dimension() ) ) );
-                htmlout.println( aAn( colloquialName( m.returnType().toString()+ m.returnType().dimension() ) ) );
+                mdout.println( aAn( colloquialName( m.returnType().toString() ) ) );
+                htmlout.println( aAn( colloquialName( m.returnType().toString() ) ) );
                 mdout.println("");
                 htmlout.println( "" );
             }
         } else {
-            String s1= m.returnType().toString() + m.returnType().dimension();
+            String s1= m.returnType().toString();
             if ( s1.equals("void") ) {
                 mdout.println( "void (returns nothing)" );
                 htmlout.println( "void (returns nothing)" );

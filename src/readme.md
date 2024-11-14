@@ -77,3 +77,7 @@ The output from any of these is at     <br>
 <hr>
 To build from command line, use just "ant jar".
 
+# 2024-11-14
+I found this is much easier to debug if working with a small project.  See
+/home/jbf/ct/netbeansProjects/TestJavaDoc and @sources-simple.txt
+

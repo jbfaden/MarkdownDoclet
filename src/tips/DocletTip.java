@@ -236,7 +236,7 @@ public class DocletTip {
             if ( k>0 ) signature.append(",");
             Parameter pk= m.parameters()[k];
             
-            String sarg= colloquialName(pk.type().toString());
+            String sarg= colloquialName(pk.type().toString())+ pk.type().dimension();
             String link= getHtmlLinkFor(pk.type().qualifiedTypeName());
             
             if ( link!=null ) {
@@ -254,7 +254,7 @@ public class DocletTip {
             MethodDoc md= (MethodDoc)m;
             String sreturn;
             String link= getHtmlLinkFor(md.returnType().qualifiedTypeName());
-            sreturn= colloquialName(md.returnType().simpleTypeName() );
+            sreturn= colloquialName(md.returnType().simpleTypeName() ) + md.returnType().dimension();
             if ( link!=null ) {
                 sb.append(" ) &rarr; <a href='").append(link).append("'>").append( sreturn ).append("</a>");
             } else {
@@ -476,10 +476,10 @@ public class DocletTip {
                                     
                 if ( toPrint ) System.err.println("class: "+s);
                 
-                //if ( s.endsWith(".BufferDataSet") ) {
+                if ( s.endsWith(".HtmlUtil") ) {
                     //seePlotElement= true;
-                //    System.err.println("here at 472");
-                //}
+                    System.err.println("here at 481");
+                }
                     
                 int is= 0;
                 for ( int j=0; j<s.length(); j++ ) {
@@ -811,13 +811,13 @@ public class DocletTip {
                 mdout.println( s1.trim() );
                 htmlout.println( s1.trim() );
             } else {
-                mdout.println( aAn( colloquialName( m.returnType().toString() ) ) );
-                htmlout.println( aAn( colloquialName( m.returnType().toString() ) ) );
+                mdout.println( aAn( colloquialName( m.returnType().toString() + m.returnType().dimension() ) ) );
+                htmlout.println( aAn( colloquialName( m.returnType().toString()+ m.returnType().dimension() ) ) );
                 mdout.println("");
                 htmlout.println( "" );
             }
         } else {
-            String s1= m.returnType().toString();
+            String s1= m.returnType().toString() + m.returnType().dimension();
             if ( s1.equals("void") ) {
                 mdout.println( "void (returns nothing)" );
                 htmlout.println( "void (returns nothing)" );

@@ -617,14 +617,13 @@ public class DocletTip {
                     mdout.println( String.format( "<a href=\"https://github.com/autoplot/documentation/blob/master/javadoc/index-all.md\">[return to index]</a>", name, name ) );
                     htmlout.println( String.format( "<br><br>\n<a href=\"https://github.com/autoplot/dev/search?q=%s&unscoped_q=%s\">[search for examples]</a>", name, name ) );
                     htmlout.println( String.format( " <a href=\"https://github.com/autoplot/documentation/tree/master/javadoc/%s\">[view on GitHub]</a>", loc ) );
-                    //                                        //http://www-pw.physics.uiowa.edu/~jbf/autoplot/javadoc2018/org/autoplot/fits/FitsDataSource.html
                     String htmlLoc;
                     if ( byAlpha ) {
                         htmlLoc= loc.substring(0,loc.length()-5)+".html#"+name;
                     } else {
                         htmlLoc= loc.substring(0,loc.length()-3)+".html#"+name;
                     }
-                    htmlout.println( String.format( " <a href=\"http://www-pw.physics.uiowa.edu/~jbf/autoplot/javadoc2018/%s\">[view on old javadoc]</a>",htmlLoc ) );
+                    htmlout.println( String.format( " <a href=\"https://cottagesystems.com/~jbf/autoplot/doc2018/%s\">[view on old javadoc]</a>",htmlLoc ) );
                     int linenum= m.position().line();
                     String p= findLinkForSource(s,linenum);
                     if ( p!=null ) {

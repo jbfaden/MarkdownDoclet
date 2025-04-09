@@ -238,7 +238,7 @@ public class DocletTip {
         signature.append(name).append("(");
         for ( int k=0; k<m.parameters().length; k++ ) {
             if ( k>0 ) sb.append(", ");
-            //if ( k>0 ) ahrefBuilder.append(",");
+            ahrefBuilder.append("-");
             if ( k>0 ) signature.append(",");
             Parameter pk= m.parameters()[k];
             
@@ -250,7 +250,7 @@ public class DocletTip {
             } else {
                 sb.append(sarg).append(" ").append(pk.name());
             }
-            //ahrefBuilder.append( pk.type().toString() );
+            ahrefBuilder.append( pk.type().toString() );
             signature.append(pk.name());
         }                    
         
@@ -396,7 +396,7 @@ public class DocletTip {
             String base= "https://docs.oracle.com/javase/8/docs/api/";
             return base + String.join( "/", ss ) + ".html" + ( postHash!=null ? postHash : "" );
         } else {
-            String base= "http://www-pw.physics.uiowa.edu/~jbf/autoplot/doc/";
+            String base= "https://cottagesystems.com/~jbf/autoplot/doc/";
             return base + String.join( "/", ss ) + ".html" + ( postHash!=null ? postHash : "" );
         }
     }
@@ -406,7 +406,7 @@ public class DocletTip {
      * JavaDoc.  This should be externally configurable, but presently it is 
      * hard-coded here.
      * "org.das2.qds.examples.Schemes#boundingBox"
-     * "https://git.uiowa.edu/jbf/autoplot/-/blob/master/doc/org/das2/qds/examples/Schemes.md#boundingBox"
+     * "hhttps://cottagesystems.com/~jbf/autoplot.doc/org/das2/qds/examples/Schemes.md#boundingBox"
      * 
      * "Schemes#boundingBox"
      * "Schemes.html#boundingBox"
@@ -713,7 +713,7 @@ public class DocletTip {
         }
         
         System.err.println("****");
-        System.err.println("v20241114_1124");
+        System.err.println("v20250409_0748");
         System.err.println("htmldoc documentation written to "+htmldoc);
         System.err.println("mddoc documentation written to "+mddoc);
         System.err.println("****");

@@ -34,6 +34,8 @@ nudnik> javadoc -docletpath /home/jbf/git/MarkdownDoclet/dist/MarkdownDoclet.jar
 And to debug from Netbeans:
 ~~~~~
 spot9> cd /home/jbf/ct/netbeansProjects/MarkdownDoclet/ 
+spot9> export htmldoc=/tmp/htmldoc/ & export mddoc=/tmp/mddoc/
+spot9> ant jar
 spot9> javadoc -J-Xrunjdwp:server=y,transport=dt_socket,address=12345,suspend=y \
    -docletpath /home/jbf/ct/netbeansProjects/MarkdownDoclet/dist/MarkdownDoclet.jar \
    -doclet tips.DocletTip \

@@ -581,6 +581,10 @@ public class DocletTip {
                     
                     String name= m.name();
                     
+                    //if ( name.equals("fftPower") ) {
+                    //    System.err.println("line 585, found "+name);
+                    //}
+                    
                     if (toPrint) System.err.println("  method: " + name );
                     if ( byAlpha ) {
                         if ( name.charAt(0)!=currentLetter ) {
@@ -603,11 +607,11 @@ public class DocletTip {
                     
                     String sb1= jySignature.toString();
                     
-                    if ( haveIndicated( fullName + "." + name )!=null ) {
-                        mdout.println(sb1+"<br>"); //TODO: these appear after.
-                        htmlout.println(sb1+"<br>");
-                        continue;
-                    }
+                    //if ( haveIndicated( fullName + "." + name )!=null ) {
+                    //    mdout.println(sb1+"<br>"); //TODO: these appear after.
+                    //    htmlout.println(sb1+"<br>");
+                    //    continue;
+                    //}
                     
                     indicated.put( fullName + "." + name, ahrefBuilder.toString() );
                     
@@ -997,10 +1001,11 @@ public class DocletTip {
         
         if ( mddoc.getAbsolutePath().equals("/") || htmldoc.getAbsolutePath().equals("/") ) {
             System.err.println("****");
+            System.err.println("Instructions: ");
             System.err.println("htmldoc must be set to the target location for html documentation (export htmldoc=/tmp/htmldoc/)");
             System.err.println("mddoc must be set to the target location for markdown documentation (export mddoc=/tmp/mddoc/)");
             System.err.println("");
-            System.err.println("ABNORMAL EXIT");
+            System.err.println("ABNORMAL EXIT, htmldoc or mddoc not set.");
             System.err.println("");
             return false;
         } else {

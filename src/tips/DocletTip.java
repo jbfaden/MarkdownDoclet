@@ -372,6 +372,9 @@ public class DocletTip {
      * @return the html code containing the link.
      */
     public static String getHtmlLinkFor( String clas ) {
+        if ( clas.startsWith("#") ) {
+            return clas;
+        }
         if ( clas.startsWith("http") ) {
             return clas;
         }
@@ -439,6 +442,11 @@ public class DocletTip {
     Map<String,String> grandIndexClass= new HashMap<>();
     Map<String,String> grandIndexSignature= new HashMap<>();
     
+    /**
+     * the current class being processed.
+     */
+    ClassDoc classDoc= null;
+    
     public boolean doStart( RootDoc root ) {
             
         ClassDoc[] classes = root.classes();
@@ -454,6 +462,8 @@ public class DocletTip {
         //boolean seePlotElement= false;
         
         for (ClassDoc classe : classes) {
+            
+            classDoc = classe;
             
             String fullName= classe.qualifiedName();
             
@@ -659,6 +669,8 @@ public class DocletTip {
             }
         }
         
+        classDoc= null;
+        
         File grandIndexFile= new File( mddoc.toString() + "/index-all.md" );
         try ( PrintStream indexOut=new PrintStream(grandIndexFile) ) {
             List<String> keys= new ArrayList( grandIndex.keySet() );
@@ -759,7 +771,8 @@ public class DocletTip {
         }
     }
     
-    private boolean doOneMethod(PrintStream mdout, PrintStream htmlout, StringBuilder ahrefBuilder, MethodDoc m, String name, String sb1, boolean byAlpha, String classNameNoPackage) {
+    private boolean doOneMethod(PrintStream mdout, PrintStream htmlout, StringBuilder ahrefBuilder, MethodDoc m, 
+            String name, String sb1, boolean byAlpha, String classNameNoPackage) {
         mdout.println("***");
         htmlout.println("<hr>");
         mdout.println("<a name=\""+ahrefBuilder.toString()+"\"></a>");
@@ -844,12 +857,27 @@ public class DocletTip {
         }
         for (Tag seeTag : seeTags) {
             SeeTag t = (SeeTag) seeTag;
-            doOneSeeTag(t, byAlpha, classNameNoPackage, mdout, htmlout);
+            StringBuilder mdout1= new StringBuilder();
+            StringBuilder htmlout1= new StringBuilder();
+            doOneSeeTag(t, byAlpha, classNameNoPackage, mdout1, htmlout1);
+            mdout.print(mdout1.toString());
+            htmlout.print(htmlout1.toString());
         }
         return false;
     }
 
-    private void doOneSeeTag(SeeTag t, boolean byAlpha, String classNameNoPackage, PrintStream mdout, PrintStream htmlout) {
+    /**
+     * returns links for the html and markdown like 
+     * <pre>
+     * .../org/das2/qds/ops/Ops.html#add-int[]-int[]
+     * </pre>
+     * @param t
+     * @param byAlpha
+     * @param classNameNoPackage
+     * @param mdout
+     * @param htmlout 
+     */
+    private void doOneSeeTag(SeeTag t, boolean byAlpha, String classNameNoPackage, StringBuilder mdout, StringBuilder htmlout) {
         int it= t.text().indexOf(')');
         String l;
         if ( it>-1 ) {
@@ -862,9 +890,9 @@ public class DocletTip {
         
         String link= l;
         int ii= link.indexOf("(");
-        if ( ii>-1 ) {
-            link= link.substring(0,ii);
-        }
+        link= link.replaceAll("[\\(\\)\\,]", "-");
+        link= link.replaceAll("\\s", "");
+        if ( link.endsWith("-") ) link= link.substring(0,link.length()-1);
         
         if ( byAlpha ) {
             if ( l.startsWith("http") ) {
@@ -893,11 +921,16 @@ public class DocletTip {
         }
         
         if ( t.label()==null ) {
-            mdout.println("<a href='"+ getMDLinkFor( link )+"'>" + seeAlsoLabel(l) +"</a><br>" );
-            htmlout.println( "<a href='"+getHtmlLinkFor(link)+"'>" + seeAlsoLabel(l) +"</a><br>" );
+            mdout.append("<a href='").append(getMDLinkFor( link )).append("'>").append(seeAlsoLabel(l)).append("</a><br>");
+            htmlout.append("<a href='").append(getHtmlLinkFor(link)).append("'>").append(seeAlsoLabel(l)).append("</a><br>");
         } else {
-            mdout.println("<a href='"+getMDLinkFor(link)+"'>" + seeAlsoLabel(l) +"</a> "+t.label()+"<br>" );
-            htmlout.println("<a href='"+getHtmlLinkFor(link)+"'>" + seeAlsoLabel(l) +"</a> "+t.label()+"<br>" );
+            mdout.append("<a href='").append(getMDLinkFor(link)).append("'>")
+                    .append(seeAlsoLabel(l))
+                    .append("</a> ").append(t.label()).append("<br>");
+            String htmlLink= getHtmlLinkFor(link);
+            htmlout.append("<a href='").append(htmlLink).append("'>")
+                    .append(seeAlsoLabel(l))
+                    .append("</a> ").append(t.label()).append("<br>");
         }
     }
 

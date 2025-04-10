@@ -523,7 +523,7 @@ public class DocletTip {
                 File mdf; // the current file to which we are writing
                 File htmlf;
                 String loc;
-                if ( nmethod>200 ) {
+                if ( fullName.equals("org.das2.qds.ops.Ops") ) {
                     byAlpha= true;
                     loc=  s + "_" + currentLetter + ".md";
                     mdf= new File( mddoc.toString() + "/" + s + "_" + currentLetter + ".md" );
@@ -655,7 +655,8 @@ public class DocletTip {
                     
                     if ( includeGrandIndex( fullName, name ) ) {
                         if ( byAlpha ) {
-                            grandIndex.put( key, s + "_"+ currentLetter + ".md#"+name );
+                            int i= htmlLoc.lastIndexOf("#");
+                            grandIndex.put( key, htmlLoc.substring(0,i-5) + "_"+ currentLetter + ".md" + htmlLoc.substring(i) );
                         } else {
                             grandIndex.put( key, htmlLoc.replaceAll("\\.html#",".md#") );
                         }

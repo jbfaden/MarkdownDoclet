@@ -339,6 +339,8 @@ public class DocletTip {
                 }
             } else if ( classFullName.startsWith( "org.autoplot.ScriptContext") ) {
                 return true;
+            } else if ( classFullName.equals( "org.autoplot.simpleproject.Util") ) {
+                return true;
             } else {
                 return false;
             }
@@ -625,7 +627,9 @@ public class DocletTip {
                     
                     indicated.put( fullName + "." + name, ahrefBuilder.toString() );
                     
-                    if ( doOneMethod(mdout, htmlout, ahrefBuilder, m, name, sb1, byAlpha, classNameNoPackage) ) continue;
+                    String href= ahrefBuilder.toString();
+                    
+                    if ( doOneMethod(mdout, htmlout, href, m, name, sb1, byAlpha, classNameNoPackage) ) continue;
                     
                     mdout.println( String.format( "\n<a href=\"https://github.com/autoplot/dev/search?q=%s&unscoped_q=%s\">[search for examples]</a>", name, name ) );
                     mdout.println( String.format( "<a href=\"https://github.com/autoplot/documentation/blob/master/javadoc/index-all.md\">[return to index]</a>", name, name ) );
@@ -633,9 +637,9 @@ public class DocletTip {
                     htmlout.println( String.format( " <a href=\"https://github.com/autoplot/documentation/tree/master/javadoc/%s\">[view on GitHub]</a>", loc ) );
                     String htmlLoc;
                     if ( byAlpha ) {
-                        htmlLoc= loc.substring(0,loc.length()-5)+".html#"+name;
+                        htmlLoc= loc.substring(0,loc.length()-5)+".html#"+href;
                     } else {
-                        htmlLoc= loc.substring(0,loc.length()-3)+".html#"+name;
+                        htmlLoc= loc.substring(0,loc.length()-3)+".html#"+href;
                     }
                     htmlout.println( String.format( " <a href=\"https://cottagesystems.com/~jbf/autoplot/doc2018/%s\">[view on old javadoc]</a>",htmlLoc ) );
                     int linenum= m.position().line();
@@ -647,16 +651,18 @@ public class DocletTip {
                     htmlout.println("<br>");
                     htmlout.println("<br>");
                     
+                    String key= htmlLoc;
+                    
                     if ( includeGrandIndex( fullName, name ) ) {
                         if ( byAlpha ) {
-                            grandIndex.put( name, s + "_"+ currentLetter + ".md#"+name );
+                            grandIndex.put( key, s + "_"+ currentLetter + ".md#"+name );
                         } else {
-                            grandIndex.put( name, s + ".md#"+name );
+                            grandIndex.put( key, htmlLoc.replaceAll("\\.html#",".md#") );
                         }
                         String firstSentence= m.commentText();
-                        grandIndexFirstLine.put( name, firstSentence );
-                        grandIndexClass.put( name, classe.qualifiedName() );
-                        grandIndexSignature.put( name, signature.toString() );
+                        grandIndexFirstLine.put( key, firstSentence );
+                        grandIndexClass.put( key, classe.qualifiedName() );
+                        grandIndexSignature.put( key, signature.toString() );
                     }
                     if (toPrint) System.err.println("  done method: " + name );
                 }
@@ -771,12 +777,25 @@ public class DocletTip {
         }
     }
     
-    private boolean doOneMethod(PrintStream mdout, PrintStream htmlout, StringBuilder ahrefBuilder, MethodDoc m, 
+    /**
+     * create documentation for one method.  Two versions are output to 
+     * mdout and htmlout.
+     * @param mdout
+     * @param htmlout
+     * @param ahref the href to use for the method.
+     * @param m
+     * @param name
+     * @param sb1
+     * @param byAlpha
+     * @param classNameNoPackage
+     * @return false if processing should continue
+     */
+    private boolean doOneMethod(PrintStream mdout, PrintStream htmlout, String ahref, MethodDoc m, 
             String name, String sb1, boolean byAlpha, String classNameNoPackage) {
         mdout.println("***");
         htmlout.println("<hr>");
-        mdout.println("<a name=\""+ahrefBuilder.toString()+"\"></a>");
-        htmlout.println("<a name=\""+ahrefBuilder.toString()+"\"></a>");
+        mdout.println("<a name=\""+ahref+"\"></a>");
+        htmlout.println("<a name=\""+ahref+"\"></a>");
         Tag[] deprecatedTags= m.tags("deprecated");
         boolean isDeprecated=  deprecatedTags.length>0 ;
         if (isDeprecated) {

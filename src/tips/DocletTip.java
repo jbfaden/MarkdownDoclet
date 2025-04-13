@@ -166,16 +166,16 @@ public class DocletTip {
             String path= "https://sourceforge.net/p/autoplot/code/HEAD/tree/autoplot/trunk/Autoplot/src/";
             return path + s + ".java"+ sline;
         } else if ( s.startsWith("org/das2/util") ) {
-            String path= "https://saturn.physics.uiowa.edu/svn/das2/dasCore/community/autoplot2011/trunk/dasCoreUtil/src/";
+            String path= "https://github.com/das-developers/das2java/tree/main/dasCoreUtil/src/";
             return path + s + ".java";
         } else if ( s.startsWith("org/das2/datum") ) {
-            String path= "https://saturn.physics.uiowa.edu/svn/das2/dasCore/community/autoplot2011/trunk/dasCoreDatum/src/";
+            String path= "https://github.com/das-developers/das2java/tree/main/dasCoreDatum/src/";
             return path + s + ".java";
         } else if ( s.startsWith("org/das2/qds") ) {
-            String path= "https://sourceforge.net/p/autoplot/code/HEAD/tree/autoplot/trunk/QDataSet/src/";
+            String path= "https://github.com/das-developers/das2java/tree/main/QDataSet/src/";
             return path + s + ".java"+ sline;
         } else if ( s.startsWith("org/das2") ) {
-            String path= "https://saturn.physics.uiowa.edu/svn/das2/dasCore/community/autoplot2011/trunk/dasCore/src/";
+            String path= "https://github.com/das-developers/das2java/tree/main/dasCore/src/";
             return path + s + ".java";
         } else {
             return null;

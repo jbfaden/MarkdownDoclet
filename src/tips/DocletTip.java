@@ -153,6 +153,7 @@ public class DocletTip {
     private static String findLinkForSource( String s, int linenum ) {
         int i= s.lastIndexOf("/");
         String sline="#l"+linenum;
+        String sLine="#L"+linenum;
         if ( s.startsWith("org/autoplot/datasource") ) {
             String path= "https://sourceforge.net/p/autoplot/code/HEAD/tree/autoplot/trunk/DataSource/src/";
             return path + s + ".java" + sline;
@@ -165,18 +166,19 @@ public class DocletTip {
         } else if ( s.substring(0,i).equals("org/autoplot") ) {
             String path= "https://sourceforge.net/p/autoplot/code/HEAD/tree/autoplot/trunk/Autoplot/src/";
             return path + s + ".java"+ sline;
+            
         } else if ( s.startsWith("org/das2/util") ) {
             String path= "https://github.com/das-developers/das2java/tree/main/dasCoreUtil/src/";
-            return path + s + ".java";
+            return path + s + ".java"+ sLine;
         } else if ( s.startsWith("org/das2/datum") ) {
             String path= "https://github.com/das-developers/das2java/tree/main/dasCoreDatum/src/";
-            return path + s + ".java";
+            return path + s + ".java"+ sLine;
         } else if ( s.startsWith("org/das2/qds") ) {
             String path= "https://github.com/das-developers/das2java/tree/main/QDataSet/src/";
-            return path + s + ".java"+ sline;
+            return path + s + ".java"+ sLine;
         } else if ( s.startsWith("org/das2") ) {
             String path= "https://github.com/das-developers/das2java/tree/main/dasCore/src/";
-            return path + s + ".java";
+            return path + s + ".java"+ sLine;
         } else {
             return null;
         }

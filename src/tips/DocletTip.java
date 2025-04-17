@@ -621,11 +621,17 @@ public class DocletTip {
                     
                     String sb1= jySignature.toString();
                     
-                    //if ( haveIndicated( fullName + "." + name )!=null ) {
-                    //    mdout.println(sb1+"<br>"); //TODO: these appear after.
-                    //    htmlout.println(sb1+"<br>");
-                    //    continue;
-                    //}
+                    int linenum= m.position().line();
+                    String p= findLinkForSource(s,linenum);
+                                        
+                    if ( haveIndicated( fullName + "." + name )!=null ) {
+                        if ( m.commentText().trim().length()==0 ) { // this is just an alternate form not worth additional comments.
+                            String src= String.format( " <a href=\"%s\">[view source]</a>", p );
+                            mdout.println(sb1+" "+src+"<br>"); 
+                            htmlout.println(sb1+" "+src+"<br>");
+                            continue;
+                        }
+                    }
                     
                     indicated.put( fullName + "." + name, ahrefBuilder.toString() );
                     
@@ -644,8 +650,6 @@ public class DocletTip {
                         htmlLoc= loc.substring(0,loc.length()-3)+".html#"+href;
                     }
                     htmlout.println( String.format( " <a href=\"https://cottagesystems.com/~jbf/autoplot/doc2018/%s\">[view on old javadoc]</a>",htmlLoc ) );
-                    int linenum= m.position().line();
-                    String p= findLinkForSource(s,linenum);
                     if ( p!=null ) {
                         htmlout.println( String.format( " <a href=\"%s\">[view source]</a>", p ) );
                     }

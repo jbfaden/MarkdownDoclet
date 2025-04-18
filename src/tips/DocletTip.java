@@ -19,8 +19,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
@@ -102,6 +104,8 @@ public class DocletTip {
                 return "Number"+suffix;
             case "java.lang.Double":
                 return "Double"+suffix;
+            case "PyFunction":
+                return "org.python.core.PyFunction"; // Kludge--don't know why...
             default:
                 return name+suffix;
         }
@@ -252,7 +256,14 @@ public class DocletTip {
             } else {
                 sb.append(sarg).append(" ").append(pk.name());
             }
-            ahrefBuilder.append( pk.type().toString() );
+            String stype= pk.type().toString();
+            if ( stype.contains(".") ) {
+                ahrefBuilder.append( pk.type().toString() );
+            } else if ( stype.equals("PyFunction") ) {
+                ahrefBuilder.append( "org.python.core.PyFunction" ); //TODO: why is this different?  Will change with Jython3
+            } else {
+                ahrefBuilder.append( pk.type().toString() );
+            }
             signature.append(pk.name());
         }                    
         
@@ -595,7 +606,7 @@ public class DocletTip {
                     
                     String name= m.name();
                     
-                    //if ( name.equals("fftPower") ) {
+                    //if ( name.equals("addMouseModule") ) {
                     //    System.err.println("line 585, found "+name);
                     //}
                     
@@ -800,7 +811,7 @@ public class DocletTip {
     private boolean doOneMethod(PrintStream mdout, PrintStream htmlout, String ahref, MethodDoc m, 
             String name, String sb1, boolean byAlpha, String classNameNoPackage) {
         mdout.println("***");
-        htmlout.println("<hr>");
+        htmlout.println("<hr>");        
         mdout.println("<a name=\""+ahref+"\"></a>");
         htmlout.println("<a name=\""+ahref+"\"></a>");
         Tag[] deprecatedTags= m.tags("deprecated");

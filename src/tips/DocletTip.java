@@ -116,6 +116,10 @@ public class DocletTip {
             n= n.substring(1);
         }
         n= n.replaceAll("org.das2.qds.QDataSet", "QDataSet");
+        int ispace= n.indexOf(" ");
+        if ( ispace>-1 && !n.endsWith(")")) {
+            n= n.substring(0,ispace);
+        }
         return n;
     }
     
@@ -648,7 +652,9 @@ public class DocletTip {
                     
                     String href= ahrefBuilder.toString();
                     
+                    // here is the bulk of the work
                     if ( doOneMethod(mdout, htmlout, href, m, name, sb1, byAlpha, classNameNoPackage) ) continue;
+                    
                     
                     mdout.println( String.format( "\n<a href=\"https://github.com/autoplot/dev/search?q=%s&unscoped_q=%s\">[search for examples]</a>", name, name ) );
                     mdout.println( String.format( "<a href=\"https://github.com/autoplot/documentation/blob/master/javadoc/index-all.md\">[return to index]</a>", name, name ) );
@@ -889,14 +895,14 @@ public class DocletTip {
         }
         Tag[] seeTags= m.tags("see");
         if ( seeTags.length>0 ) {
-            mdout.println("### See Also:");
-            htmlout.println("<h3>See Also:</h3>");
+            mdout.println("### See Also:\n");
+            htmlout.println("<h3>See Also:</h3>\n");
         }
         for (Tag seeTag : seeTags) {
             SeeTag t = (SeeTag) seeTag;
             StringBuilder mdout1= new StringBuilder();
             StringBuilder htmlout1= new StringBuilder();
-            doOneSeeTag(t, byAlpha, classNameNoPackage, mdout1, htmlout1);
+            String see= doOneSeeTag(t, byAlpha, classNameNoPackage, mdout1, htmlout1);
             mdout.print(mdout1.toString());
             htmlout.print(htmlout1.toString());
         }
@@ -914,7 +920,7 @@ public class DocletTip {
      * @param mdout
      * @param htmlout 
      */
-    private void doOneSeeTag(SeeTag t, boolean byAlpha, String classNameNoPackage, StringBuilder mdout, StringBuilder htmlout) {
+    private String doOneSeeTag(SeeTag t, boolean byAlpha, String classNameNoPackage, StringBuilder mdout, StringBuilder htmlout) {
         int it= t.text().indexOf(')');
         String l;
         if ( it>-1 ) {
@@ -927,6 +933,11 @@ public class DocletTip {
         
         String link= l;
         int ii= link.indexOf("(");
+        if ( ii==-1 ) ii=link.indexOf(" ");
+        if ( ii==-1 ) ii= link.length();
+        if ( ii>-1 ) {
+            link= link.substring(0,ii);
+        }
         link= link.replaceAll("[\\(\\)\\,]", "-");
         link= link.replaceAll("\\s", "");
         if ( link.endsWith("-") ) link= link.substring(0,link.length()-1);
@@ -957,18 +968,23 @@ public class DocletTip {
             }
         }
         
+        String result;
         if ( t.label()==null ) {
-            mdout.append("<a href='").append(getMDLinkFor( link )).append("'>").append(seeAlsoLabel(l)).append("</a><br>");
-            htmlout.append("<a href='").append(getHtmlLinkFor(link)).append("'>").append(seeAlsoLabel(l)).append("</a><br>");
+            mdout.append("<a href='").append(getMDLinkFor( link )).append("'>").append(seeAlsoLabel(l)).append("</a><br>\n");
+            htmlout.append("<a href='").append(getHtmlLinkFor(link)).append("'>").append(seeAlsoLabel(l)).append("</a><br>\n");
         } else {
-            mdout.append("<a href='").append(getMDLinkFor(link)).append("'>")
+            String mdLink= getMDLinkFor(link);
+            mdout.append("<a href='").append(mdLink).append("'>")
                     .append(seeAlsoLabel(l))
-                    .append("</a> ").append(t.label()).append("<br>");
+                    .append("</a> ").append(t.label()).append("<br>\n");
             String htmlLink= getHtmlLinkFor(link);
             htmlout.append("<a href='").append(htmlLink).append("'>")
                     .append(seeAlsoLabel(l))
-                    .append("</a> ").append(t.label()).append("<br>");
+                    .append("</a> ").append(t.label()).append("<br>\n");
+            
         }
+        result= htmlout.toString();
+        return result;
     }
 
     private boolean doOneField(FieldDoc f, PrintStream mdout, PrintStream htmlout, String fullName, boolean byAlpha, String s, char currentLetter, ClassDoc classe) {
